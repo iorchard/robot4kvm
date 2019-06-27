@@ -19,7 +19,10 @@ Get And Verify Debian Image
     ...     Run And Return Rc
     ...     curl -sLo ${SRC_DIR}/${IMG} ${IMG_URL}/${IMG}
 
-    Log     curl -sLo ${SRC_DIR}/SHA256SUMS ${IMG_URL}/SHA256SUMS   console=True
+    Log     Set debian image ReadOnly   console=True
+    Run		chmod 0400 ${SRC_DIR}/${IMG}
+
+    Log     Get SHA256 checksum of the image ${IMG}.   console=True
     ${rc} =     Run And Return Rc
     ...     curl -sLo ${SRC_DIR}/SHA256SUMS ${IMG_URL}/SHA256SUMS
     Should Be Equal As Integers     ${rc}   0

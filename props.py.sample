@@ -27,6 +27,7 @@ MEM = {
 DISK = {
         PREFIX: 200,
 }
+# For VM with storage role
 OSD_NUM = 2     # The number of osd disks for VM with storage role
 OSD_SIZE = 10   # OSD disk size in GiB.
 # machine IP list.
