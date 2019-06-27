@@ -22,6 +22,8 @@ Tear Down Ceph Lab
         Remove File     ${DST_DIR}/${vm}.qcow2
         Run Keyword If	'storage' in ${ROLES}[${vm}]
         ...     Remove File   ${DST_DIR}/${vm}-*.qcow2
+		Remove Directory	${DST_DIR}	recursive=True
+		Directory Should Not Exist	${DST_DIR}
     END
 
 *** Keywords ***
