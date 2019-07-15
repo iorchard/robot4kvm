@@ -24,6 +24,8 @@ Tear Down Ceph Lab
         ...     Remove File   ${DST_DIR}/${vm}-*.qcow2
 		Remove Directory	${DST_DIR}	recursive=True
 		Directory Should Not Exist	${DST_DIR}
+		Remove Directory	${OSD_DIR}	recursive=True
+		Directory Should Not Exist	${OSD_DIR}
     END
 
 *** Keywords ***

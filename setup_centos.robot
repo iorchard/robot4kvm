@@ -98,6 +98,8 @@ Preflight
     Run Keyword If        ${rc} != 0        Create Directory    ${SRC_DIR}
     ${rc} =        Run And Return Rc    ls -ld ${DST_DIR}
     Run Keyword If        ${rc} != 0        Create Directory    ${DST_DIR}
+    ${rc} =        Run And Return Rc    ls -ld ${OSD_DIR}
+    Run Keyword If        ${rc} != 0        Create Directory    ${OSD_DIR}
 
     Log        Create ${SSHKEY} if not exists        console=True
     ${rc} =        Run And Return Rc    ls ${SSHKEY}
@@ -119,7 +121,7 @@ Create XML
 
 Create Disk
     [Arguments]     ${vm}
-    Run     virsh attach-disk ${vm} ${DST_DIR}/${vm}.qcow2 vda --driver qemu --subdriver qcow2 --targetbus virtio --persistent
+    Run     virsh attach-disk ${vm} ${DST_DIR}/${vm}.qcow2 sda --driver qemu --subdriver qcow2 --targetbus scsi --persistent
 
     Run Keyword If  'storage' in ${ROLES}[${vm}]
     ...        Create OSD Disks    ${vm}
@@ -131,9 +133,9 @@ Create OSD Disks
     ${end} =    Evaluate    ${OSD_NUM} + 1
     FOR     ${drv}  IN RANGE    1    ${end}
         ${rc} =     Run And Return Rc
-        ...     qemu-img create -f qcow2 ${DST_DIR}/${vm}-${drv}.qcow2 ${OSD_SIZE}G
+        ...     qemu-img create -f qcow2 ${OSD_DIR}/${vm}-${drv}.qcow2 ${OSD_SIZE}G
         Should Be Equal As Integers     ${rc}   0
-        Run     virsh attach-disk ${vm} ${DST_DIR}/${vm}-${drv}.qcow2 vd${LETTERS}[${drv}] --driver qemu --subdriver qcow2 --targetbus virtio --persistent
+        Run     virsh attach-disk ${vm} ${OSD_DIR}/${vm}-${drv}.qcow2 sd${LETTERS}[${drv}] --driver qemu --subdriver qcow2 --targetbus scsi --persistent
     END
 
 Create Interfaces

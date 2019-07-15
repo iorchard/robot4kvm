@@ -28,6 +28,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
+    <controller type='scsi' model='virtio-scsi' index='0'/>
     <emulator>/usr/bin/kvm</emulator>
     <serial type='pty'>
       <target port='0'/>
