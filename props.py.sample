@@ -6,42 +6,79 @@ USERID = 'clex'
 
 # VM location and size.
 SRC_DIR = '/data/' + os.environ.get('USER') + '/images'
-DST_DIR = '/data/' + os.environ.get('USER') + '/genesis'
+DST_DIR = '/data/' + os.environ.get('USER') + '/taco1-lab'
+OSD_DIR = '/srv/nfs/' + os.environ.get('USER') + '/taco1-lab'
 
 # machine list.
-PREFIX = 'genesis'
+PREFIX = 'taco1-'
 VMS = [
-        PREFIX,
+        PREFIX + 'master',
+        PREFIX + 'worker1',
+        PREFIX + 'worker2',
 ]
 
 # machine role list.
 ROLES = {
-        PREFIX: ['deployer'],
+        PREFIX + 'master': ['master', 'storage'],
+        PREFIX + 'worker1': ['worker', 'compute'],
+        PREFIX + 'worker2': ['worker', 'compute'],
 }
 CORES = {
-        PREFIX: 2,
+        PREFIX + 'master': 16,
+        PREFIX + 'worker1': 16,
+        PREFIX + 'worker2': 16,
 }
 MEM = {
-        PREFIX: 4,
+        PREFIX + 'master': 64,
+        PREFIX + 'worker1': 64,
+        PREFIX + 'worker2': 64,
 }
 DISK = {
-        PREFIX: 200,
+        PREFIX + 'master': 120,
+        PREFIX + 'worker1': 30,
+        PREFIX + 'worker2': 30,
 }
 # For VM with storage role
-OSD_NUM = 2     # The number of osd disks for VM with storage role
-OSD_SIZE = 10   # OSD disk size in GiB.
+OSD_NUM = 3     # The number of osd disks for VM with storage role
+OSD_SIZE = 100   # OSD disk size in GiB.
 # machine IP list.
-EXT_NET = '192.168.150'
-INT_NET = '192.168.153'
-VMBR0 = 'virbr0'    # EXT_NET bridge interface
-VMBR1 = 'virbr1'    # INT_NET bridge interface
-GW = '192.168.150.1'    # Gateway IP address
-IP = 20  # The last octet of the IP address to begin.
-IPS = {
-        PREFIX: [EXT_NET + '.' + str(IP),
-                 INT_NET + '.' + str(IP)],
+NET = { 'ext': '192.168.150',
+        'mgmt': '192.168.151',
+        'provider': '192.168.152',
+        'tenant': '192.168.153',
+        'ceph-pub': '192.168.154',
+        'ceph-cluster': '192.168.155',
 }
 
+GW = '192.168.150.1'    # Gateway IP address
+DNS = '8.8.8.8'     # DNS server IP
+IP = 120  # The last octet of the IP address to begin.
+IPS = {
+        PREFIX + 'master': [
+                            NET['ext'] + '.' + str(IP),
+                            NET['mgmt'] + '.' + str(IP),
+                            NET['provider'] + '.' + str(IP),
+                            NET['tenant'] + '.' + str(IP),
+                            NET['ceph-pub'] + '.' + str(IP),
+                            NET['ceph-cluster'] + '.' + str(IP),
+        ],
+        PREFIX + 'worker1': [
+                            NET['ext'] + '.' + str(IP+1),
+                            NET['mgmt'] + '.' + str(IP+1),
+                            NET['provider'] + '.' + str(IP+1),
+                            NET['tenant'] + '.' + str(IP+1),
+                            NET['ceph-pub'] + '.' + str(IP+1),
+                            '',
+        ],
+        PREFIX + 'worker2': [
+                            NET['ext'] + '.' + str(IP+2),
+                            NET['mgmt'] + '.' + str(IP+2),
+                            NET['provider'] + '.' + str(IP+2),
+                            NET['tenant'] + '.' + str(IP+2),
+                            NET['ceph-pub'] + '.' + str(IP+2),
+                            '',
+        ],
+}
 # Do not edit below this line!!!
 # debian openstack image 
 # disk total size: 2G
@@ -63,7 +100,7 @@ CENTOS_IMG = 'CentOS-{}-{}-GenericCloud.qcow2'.format(CENTOS_VER, CENTOS_ARCH)
 CENTOS_UID = 'centos'
 
 # which OS you choose. DEB or CENTOS?
-OS = 'DEB'
+OS = 'CENTOS'
 IMG_URL = eval('{}_IMG_URL'.format(OS))
 VER = eval('{}_VER'.format(OS))
 ARCH = eval('{}_ARCH'.format(OS))
