@@ -88,8 +88,7 @@ $VIRTC -a ${IMGFILE} \
     --install ${IPKGS} \
     --uninstall ${RPKGS} \
     --upload /etc/hosts:/etc/hosts \
-    --upload /etc/ssh/sshd_config:/etc/ssh/sshd_config \
-    --upload /tmp/interfaces:/etc/network/interfaces \
+    $(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d;done) \
     --upload data/grub:/etc/default/grub \
     --run-command "update-grub" \
 	--run-command "dpkg-reconfigure openssh-server" \
