@@ -74,6 +74,7 @@ DEB_IMG = 'debian-{}-openstack-{}.qcow2'.format(DEB_VER, DEB_ARCH)
 DEB_UID = 'debian'
 DEB_KEYSERVER = 'keyring.debian.org'
 # Find out keyid using 'gpg --verify SHA256SUMS.sign' output.
+# And Run gpg --keyserver ${DEB_KEYSERVER} --recv <keyid>
 DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B' # debian buster key
 # centos openstack image 
 # disk total size: 8G

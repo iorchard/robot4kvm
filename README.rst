@@ -27,23 +27,14 @@ have python environment.::
     (robot) $ pip install wheel
     (robot) $ pip install robotframework \
                           robotframework-sshlibrary \
-                          cryptography==2.4.2 
-
-cryptography 2.5 and above are not compatible with paramiko
-that robotframeowrk-sshlibrary uses so install 2.4.2 version.
+                          cryptography
 
 Before running robot codes, edit the following files in data/ directory
 for your environment.
 
 * default.tpl: virsh xml template for admin and client vm.
   You can change anything except upper-case placeholder variables 
-  like NAME, MEM, CORES, UUID, MAC1, MAC2.
-* osd.tpl: virsh xml template for osd vm.
-  You can change anything except upper-case placeholder variables 
-  like NAME, MEM, CORES, UUID, MAC1, MAC2.
-* interfaces.tpl: template file for network setting.
-  You can change anything upper-case letter placeholder variables 
-  like IP1, IP2
+  like NAME, MEM, CORES, UUID.
 * grub: grub file to inject into VM
 
 Copy props.py.sample to props.py 

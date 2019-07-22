@@ -37,6 +37,7 @@ Cleanup
 
 Check VM State
     [Arguments]     ${v}
-    ${rc}   ${o} =      Run And Return Rc And Output    virsh domstate ${v}
+    ${rc}   ${o} =      Run And Return Rc And Output    
+    ...     LANG=C virsh domstate ${v}
     Run Keyword If  ${rc} == 0      Should Contain      ${o}    shut
 
