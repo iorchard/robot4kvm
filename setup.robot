@@ -9,6 +9,7 @@ Variables       props.py
 *** Variables ***
 ${VM_MAN}       ${CURDIR}/scripts/vm_man.sh
 ${MACGEN}       ${CURDIR}/scripts/macgen.sh
+@{LETTERS}      a   b   c   d   e   f   g   h
 
 *** Tasks ***
 Get And Verify Debian Image
@@ -43,7 +44,6 @@ Get And Verify Debian Image
     ${result} =     Run Process
     ...     grep ${IMG}\$ ${SRC_DIR}/SHA256SUMS|sha256sum --check --quiet -
     ...     shell=yes   cwd=${SRC_DIR}
-    Run Keyword If  ${result.rc} != 0   Remove File     ${SRC_DIR}/${IMG}
     Should Be Equal As Integers     ${result.rc}   0
     ...     msg="Fail to verify SHA checksum for ${IMG}."
 
@@ -177,11 +177,12 @@ Attach Interface
     ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
     Should Be Equal As Integers     ${rc}   0
 
-    Run     virsh attach-interface --domain ${vm} --type bridge --source virbr${i} --model virtio --mac ${mac} --persistent
+    ${bri} =    Evaluate    ${i} + 1
+    Run     virsh attach-interface --domain ${vm} --type bridge --source virbr${bri} --model virtio --mac ${mac} --persistent
 
     Run Keyword If  "${i}" == "0" 
     ...     Create File     ${TEMPDIR}/eth${i}
-    ...     auto eth${i}\niface eth${i} inet static\n\taddress ${ip}/24\n\tgateway ${GW}\n
+    ...     auto eth${i}\niface eth${i} inet static\n\taddress ${ip}/8\n\tgateway ${GW}\n
     ...     ELSE
     ...     Create File     ${TEMPDIR}/eth${i}
     ...     auto eth${i}\niface eth${i} inet static\n\taddress ${ip}/24\n

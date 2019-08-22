@@ -5,16 +5,14 @@
   <currentMemory unit='GiB'>MEM</currentMemory>
   <vcpu placement='static'>CORES</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-2.8'>hvm</type>
+    <type arch='x86_64'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
     <acpi/>
     <apic/>
   </features>
-  <cpu mode='host-passthrough'>
-    <cache mode='passthrough'/>
-  </cpu>
+  <cpu mode='host-passthrough'/>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
     <timer name='pit' tickpolicy='delay'/>
