@@ -21,13 +21,10 @@ Install robot framework. I always create virtual env to
 have python environment.::
 
     $ sudo apt update && sudo apt install -y python3-venv dirmngr
-    $ mkdir ~/.envs
     $ python3 -m venv ~/.envs/robot
     $ source ~/.envs/robot/bin/activate
     (robot) $ pip install wheel
-    (robot) $ pip install robotframework \
-                          robotframework-sshlibrary \
-                          cryptography
+    (robot) $ pip install robotframework
 
 Before running robot codes, edit the following files in data/ directory
 for your environment.

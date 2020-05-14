@@ -27,9 +27,6 @@ Get The Image
     ...     Run And Return Rc
     ...     curl -sLo ${SRC_DIR}/${IMG} ${IMG_URL}/${IMG}
 
-    Log     Set image ReadOnly   console=True
-    Run        chmod 0400 ${SRC_DIR}/${IMG}
-
 Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
