@@ -51,12 +51,9 @@ Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
     FOR     ${vm}   IN  @{VMS}
-        Log     Link ${SRC_DIR}/${IMG} to ${DST_DIR}/${vm}.qcow2     
+        Log     Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/${vm}.qcow2     
         ...     console=True
-        ${rc} =     Run And Return Rc
-        ...     qemu-img create -f qcow2 -b ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
-        Should Be Equal As Integers     ${rc}   0   
-        #Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
+        Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
 
 		Log		Resize the image to ${DISK}[${vm}]G.	console=True
         ${rc} =     Run And Return Rc
@@ -132,8 +129,8 @@ Preflight
 Cleanup
     Comment     Clean up the debris.
     Log     Remove temporary files.		console=True
-    #Remove File     ${SRC_DIR}/SHA256SUM*
-    #Remove Files     ${TEMPDIR}/xml     ${TEMPDIR}/interfaces
+    Remove File     ${SRC_DIR}/SHA256SUM*
+    Remove Files     ${TEMPDIR}/xml     ${TEMPDIR}/interfaces
 
 Create XML
     [Documentation]     Create XML.
