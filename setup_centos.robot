@@ -58,8 +58,8 @@ Set Up Lab
         Create XML  ${vm}   ${uuid}    default.tpl
 
         Log     Define VM     console=True
-        ${rc} =     Run And Return Rc
-        ...     virsh define ${TEMPDIR}/xml
+        ${rc} =     Wait Until Keyword Succeeds		3x	1s
+		...		Run And Return Rc	virsh define ${TEMPDIR}/xml
         Should Be Equal As Integers     ${rc}   0
 
         Log     Create disk for ${vm}    console=True
@@ -148,7 +148,7 @@ Attach Interface
     ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
     Should Be Equal As Integers     ${rc}   0
 
-    Run     virsh attach-interface --domain ${vm} --type bridge --source virbr${index} --model virtio --mac ${mac} --persistent
+    Run     virsh attach-interface --domain ${vm} --type bridge --source ${BR_NAME}${index} --model virtio --mac ${mac} --persistent
 
     Run Keyword If  "${ip}" == "" 
     ...     Create File     ${TEMPDIR}/ifcfg-eth${index}
