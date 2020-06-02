@@ -26,20 +26,21 @@ Get And Verify Debian Image
     Should Be Equal As Integers     ${rc}   0
     ...     msg="Fail to get SHA256SUMS."
 
-    ${rc} =     Run And Return Rc
-    ...     curl -sLo ${SRC_DIR}/SHA256SUMS.sign ${IMG_URL}/SHA256SUMS.sign
-    Should Be Equal As Integers     ${rc}   0
-    ...     msg="Fail to get SHA256SUMS.sign."
-
-    Log     gpg --verify ${SRC_DIR}/SHA256SUMS.sign ${SRC_DIR}/SHA256SUMS   console=True
-    ${rc} =     Run And Return Rc
-    ...     gpg --verify ${SRC_DIR}/SHA256SUMS.sign ${SRC_DIR}/SHA256SUMS
-    Should Be Equal As Integers     ${rc}   0
-    ...     msg="Fail to verify GPG SHA256SUMS."
+## Currently there is no sign file in buster url. So skip it.
+#    ${rc} =     Run And Return Rc
+#    ...     curl -sLo ${SRC_DIR}/SHA256SUMS.sign ${IMG_URL}/SHA256SUMS.sign
+#    Should Be Equal As Integers     ${rc}   0
+#    ...     msg="Fail to get SHA256SUMS.sign."
+#
+#    Log     gpg --verify ${SRC_DIR}/SHA256SUMS.sign ${SRC_DIR}/SHA256SUMS   console=True
+#    ${rc} =     Run And Return Rc
+#    ...     gpg --verify ${SRC_DIR}/SHA256SUMS.sign ${SRC_DIR}/SHA256SUMS
+#    Should Be Equal As Integers     ${rc}   0
+#    ...     msg="Fail to verify GPG SHA256SUMS."
 
     Log     Verify debian image with SHA checksum.   console=True
     ${result} =     Run Process
-    ...     grep ${IMG}\$ ${SRC_DIR}/SHA256SUMS|sha256sum --check --quiet -
+    ...     grep ${IMG}\$ SHA256SUMS|sha256sum --check --quiet -
     ...     shell=yes   cwd=${SRC_DIR}
     Should Be Equal As Integers     ${result.rc}   0
     ...     msg="Fail to verify SHA checksum for ${IMG}."
@@ -172,7 +173,7 @@ Attach Interface
     Should Be Equal As Integers     ${rc}   0
 
     ${bri} =    Evaluate    ${i} + 1
-    Run     virsh attach-interface --domain ${vm} --type bridge --source virbr${bri} --model virtio --mac ${mac} --persistent
+    Run     virsh attach-interface --domain ${vm} --type bridge --source ${BR_NAME}${i} --model virtio --mac ${mac} --persistent
 
     Run Keyword If  "${i}" == "0" 
     ...     Create File     ${TEMPDIR}/eth${i}
