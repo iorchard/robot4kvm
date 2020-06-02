@@ -63,6 +63,8 @@ IPS = {
         NET['mgmt'] + '.' + str(IP+2),
     ],
 }
+# which OS you choose. DEB or CENTOS?
+OS = 'DEB'
 
 # Do not edit below this line!!!
 # debian openstack image 
@@ -86,8 +88,6 @@ CENTOS_ARCH = 'x86_64'
 CENTOS_IMG = 'CentOS-{}-{}-GenericCloud.qcow2'.format(CENTOS_VER, CENTOS_ARCH)
 CENTOS_UID = 'centos'
 
-# which OS you choose. DEB or CENTOS?
-OS = 'CENTOS'
 IMG_URL = eval('{}_IMG_URL'.format(OS))
 VER = eval('{}_VER'.format(OS))
 ARCH = eval('{}_ARCH'.format(OS))
