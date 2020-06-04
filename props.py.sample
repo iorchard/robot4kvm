@@ -2,9 +2,9 @@
 import os
 
 # user account in VM.
-USERID = 'orchard'
+USERID = 'jijisa'
 
-PREFIX = 'pengrixio-'
+PREFIX = 'k8s-cilium-'
 # VM location and size.
 SRC_DIR = '/data/' + os.environ.get('USER') + '/images'
 DST_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
@@ -12,57 +12,123 @@ OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
 
 # machine list.
 VMS = [
-        PREFIX + 'master',
-        PREFIX + 'node1',
-        PREFIX + 'node2',
+        PREFIX + 'lb1',
+        PREFIX + 'lb2',
+        PREFIX + 'm1',
+        PREFIX + 'm2',
+        PREFIX + 'm3',
+        PREFIX + 'w1',
+        PREFIX + 'w2',
 ]
 
 # machine role list.
 ROLES = {
-        PREFIX + 'master': ['master'],
-        PREFIX + 'node1': ['node'],
-        PREFIX + 'node2': ['node'],
+        PREFIX + 'lb1': ['load_balancer'],
+        PREFIX + 'lb2': ['load_balancer'],
+        PREFIX + 'm1': ['master'],
+        PREFIX + 'm2': ['master'],
+        PREFIX + 'm3': ['master'],
+        PREFIX + 'w1': ['worker'],
+        PREFIX + 'w2': ['worker'],
 }
 CORES = {
-        PREFIX + 'master': 2,
-        PREFIX + 'node1': 2,
-        PREFIX + 'node2': 2,
+        PREFIX + 'lb1': 4,
+        PREFIX + 'lb2': 4,
+        PREFIX + 'm1': 4,
+        PREFIX + 'm2': 4,
+        PREFIX + 'm3': 4,
+        PREFIX + 'w1': 4,
+        PREFIX + 'w2': 4,
 }
 MEM = {
-        PREFIX + 'master': 2,
-        PREFIX + 'node1': 4,
-        PREFIX + 'node2': 4,
+        PREFIX + 'lb1': 4,
+        PREFIX + 'lb2': 4,
+        PREFIX + 'm1': 4,
+        PREFIX + 'm2': 4,
+        PREFIX + 'm3': 4,
+        PREFIX + 'w1': 16,
+        PREFIX + 'w2': 16,
 }
 DISK = {
-        PREFIX + 'master': 30,
-        PREFIX + 'node1': 30,
-        PREFIX + 'node2': 30,
+        PREFIX + 'lb1': 50,
+        PREFIX + 'lb2': 50,
+        PREFIX + 'm1': 50,
+        PREFIX + 'm2': 50,
+        PREFIX + 'm3': 50,
+        PREFIX + 'w1': 50,
+        PREFIX + 'w2': 50,
 }
 # For VM with storage role
 OSD_NUM = 3     # The number of osd disks for VM with storage role
 OSD_SIZE = 10   # OSD disk size in GiB.
 # machine IP list.
-NET = { 'ext': '10.3.0',
-        'mgmt': '192.168.10',
+NET = { 'ext': '192.168.20',
+        'mgmt': '192.168.21',
 }
-GW = '10.3.0.2'    # Gateway IP address
+GW = '192.168.20.1'    # Gateway IP address
 DNS = '8.8.8.8'
-IP = 10  # The last octet of the IP address to begin.
-BR_NAME = 'virbr'
+IP = 31  # The last octet of the IP address to begin.
+REP_BR = 'br1'  # Select this bridge's ip to insert into /etc/hosts
 IPS = {
-    PREFIX + 'master': [
-        NET['ext'] + '.' + str(IP),
-        NET['mgmt'] + '.' + str(IP),
-    ],
-    PREFIX + 'node1': [
-        NET['ext'] + '.' + str(IP+1),
-        NET['mgmt'] + '.' + str(IP+1),
-    ],
-    PREFIX + 'node2': [
-        NET['ext'] + '.' + str(IP+2),
-        NET['mgmt'] + '.' + str(IP+2),
-    ],
+    PREFIX + 'lb1': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP),
+            'nm': 24,
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP),
+            'nm': 24,
+        },
+    },
+    PREFIX + 'lb2': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP+1),
+            'nm': 24,
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+1),
+            'nm': 24,
+        },
+    },
+    PREFIX + 'm1': {
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+2),
+            'nm': 24,
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+    },
+    PREFIX + 'm2': {
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+3),
+            'nm': 24,
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+    },
+    PREFIX + 'm3': {
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+4),
+            'nm': 24,
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+    },
+    PREFIX + 'w1': {
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+5),
+            'nm': 24,
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+    },
+    PREFIX + 'w2': {
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+6),
+            'nm': 24,
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+    },
 }
+
 # which OS you choose. DEB or CENTOS?
 OS = 'DEB'
 

@@ -49,6 +49,14 @@ Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
     FOR     ${vm}   IN  @{VMS}
+        Log        ${vm}: Add VM IP in /etc/hosts.    console=True
+        ${rc} =        Run And Return Rc
+        ...    grep -q "${IPS['${vm}']['${REP_BR}']['ip']}.*${vm}" /etc/hosts
+        Run Keyword If    ${rc} != 0        Run 
+        ...		echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
+    END
+
+    FOR     ${vm}   IN  @{VMS}
         Log     Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/${vm}.qcow2     
         ...     console=True
         Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
@@ -65,12 +73,6 @@ Set Up Lab
 
         ${rc}   ${uuid} =   Run And Return Rc And Output
         ...     cat /proc/sys/kernel/random/uuid
-
-        Log        ${vm}: Add VM IP in /etc/hosts.    console=True
-        ${rc} =        Run And Return Rc
-        ...        grep -q "${IPS}[${vm}][0].*${vm}" /etc/hosts
-        Run Keyword If    ${rc} != 0        Run 
-        ...		echo "${IPS}[${vm}][0] ${vm} # ${OS}"|sudo tee -a /etc/hosts
 
         Log     Create XML for ${vm}    console=True
         Create XML  ${vm}   ${uuid}    default.tpl
@@ -91,7 +93,6 @@ Set Up Lab
         ...     ${VM_MAN} -f ${DST_DIR}/${vm}.qcow2 -u ${USERID}
         Should Be Equal As Integers     ${rc}   0   
         ...     msg="vm_man failed: ${out}"
-
     END
 
 Start Lab
@@ -128,7 +129,7 @@ Cleanup
     Comment     Clean up the debris.
     Log     Remove temporary files.		console=True
     Remove File     ${SRC_DIR}/SHA256SUM*
-    Remove Files     ${TEMPDIR}/xml     ${TEMPDIR}/interfaces
+    Remove Files     ${TEMPDIR}/xml
 
 Create XML
     [Documentation]     Create XML.
@@ -158,26 +159,26 @@ Create OSD Disks
 
 Create Interfaces
     [Documentation]     Create Interfaces.
-    [Arguments]     ${vm}   ${ip_list}
-    ${index} =      Set Variable    0
+    [Arguments]     ${vm}   ${ifaces}
+    ${i} =      Set Variable    0
     Remove File     ${TEMPDIR}/eth*
-    FOR     ${ip}   IN      @{ip_list}
-        Log     ${index}:${ip}      console=True
-        Attach Interface    ${vm}   ${index}    ${ip}
-        ${index} =      Evaluate    ${index} + 1
+    FOR     ${br}   IN      @{ifaces}
+        Log     ${vm}:${br}:${ifaces['${br}']}      console=True
+		${netinfo} =	Set Variable	${ifaces['${br}']}
+
+		${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
+		Should Be Equal As Integers     ${rc}   0
+
+		Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
+
+		Run Keyword If	"${netinfo['ip']}" == ""
+		...		Create File		${TEMPDIR}/eth${i}
+		...		auto eth${i}\niface eth${i} inet manual\n
+		...		ELSE IF		'gw' in ${netinfo}
+        ...     Create File     ${TEMPDIR}/eth${i}
+        ...     auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tgateway ${netinfo['gw']}\n
+        ...     ELSE
+        ...     Create File     ${TEMPDIR}/eth${i}
+        ...     auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n
+        ${i} =      Evaluate    ${i} + 1
     END
-
-Attach Interface
-    [Arguments]     ${vm}   ${i}    ${ip}
-    ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
-    Should Be Equal As Integers     ${rc}   0
-
-    ${bri} =    Evaluate    ${i} + 1
-    Run     virsh attach-interface --domain ${vm} --type bridge --source ${BR_NAME}${i} --model virtio --mac ${mac} --persistent
-
-    Run Keyword If  "${i}" == "0" 
-    ...     Create File     ${TEMPDIR}/eth${i}
-    ...     auto eth${i}\niface eth${i} inet static\n\taddress ${ip}/8\n\tgateway ${GW}\n
-    ...     ELSE
-    ...     Create File     ${TEMPDIR}/eth${i}
-    ...     auto eth${i}\niface eth${i} inet static\n\taddress ${ip}/24\n
