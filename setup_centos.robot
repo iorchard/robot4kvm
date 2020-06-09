@@ -137,7 +137,7 @@ Create OSD Disks
 Create Interfaces
     [Documentation]        Create Interfaces
     [Arguments]        ${vm}    ${ifaces}
-    ${index} =        Set Variable    0
+    ${i} =        Set Variable    0
     Remove File     ${TEMPDIR}/ifcfg*
     FOR     ${br}   IN         @{ifaces}
         Log        ${vm}:${br}:${ifaces['${br}']}        console=True
@@ -149,13 +149,13 @@ Create Interfaces
         Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
 
         Run Keyword If    "${netinfo['ip']}" == ""
-        ...         Create File     ${TEMPDIR}/ifcfg-eth${index}
-        ...         DEVICE=eth${index}\nHWADDR=${mac}\nONBOOT=yes
+        ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
+        ...         DEVICE=eth${i}\nHWADDR=${mac}\nONBOOT=yes
         ...     ELSE IF     'gw' in ${netinfo}
-        ...         Create File     ${TEMPDIR}/ifcfg-eth${index}
-        ...         DEVICE=eth${index}\nHWADDR=${mac}\nGATEWAY=${GW}\nIPADDR=${ip}\nNETMASK=255.255.255.0\nONBOOT=yes
+        ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
+        ...         DEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nNETMASK=${netinfo['nm']}\nONBOOT=yes
         ...     ELSE
-        ...         Create File     ${TEMPDIR}/ifcfg-eth${index}
-        ...         DEVICE=eth${index}\nHWADDR=${mac}\nIPADDR=${ip}\nNETMASK=255.255.255.0\nONBOOT=yes
-        ${index} =        Evaluate    ${index} + 1
+        ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
+        ...         DEVICE=eth${i}\nHWADDR=${mac}\nIPADDR=${netinfo['ip']}\nNETMASK=${netinfo['nm']}\nONBOOT=yes
+        ${i} =        Evaluate    ${i} + 1
     END

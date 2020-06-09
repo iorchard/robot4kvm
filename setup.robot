@@ -172,13 +172,14 @@ Create Interfaces
         Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
 
         Run Keyword If    "${netinfo['ip']}" == ""
-        ...        Create File        ${TEMPDIR}/eth${i}
-        ...        auto eth${i}\niface eth${i} inet manual\n
-        ...        ELSE IF        'gw' in ${netinfo}
-        ...     Create File     ${TEMPDIR}/eth${i}
-        ...     auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tgateway ${netinfo['gw']}\n
+        ...         Create File        ${TEMPDIR}/eth${i}
+        ...         auto eth${i}\niface eth${i} inet manual\n
+        ...     ELSE IF        'gw' in ${netinfo}
+        ...         Create File        ${TEMPDIR}/eth${i}
+        ...         auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tgateway ${netinfo['gw']}\n
         ...     ELSE
-        ...     Create File     ${TEMPDIR}/eth${i}
-        ...     auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n
+        ...         Create File        ${TEMPDIR}/eth${i}
+        ...         auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n
+
         ${i} =      Evaluate    ${i} + 1
     END
