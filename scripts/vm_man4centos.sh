@@ -82,9 +82,9 @@ then
 fi
 echo
 
+#    --update \ # not update for taco machines.
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
-    --update \
     --upload /etc/hosts:/etc/hosts \
     --write /etc/selinux/config:SELINUX=disaled\nSELINUXTYPE=targeted \
     $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \

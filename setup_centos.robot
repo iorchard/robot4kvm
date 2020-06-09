@@ -31,6 +31,14 @@ Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
     FOR     ${vm}   IN  @{VMS}
+        Log        ${vm}: Add VM IP in /etc/hosts.    console=True
+        ${rc} =        Run And Return Rc
+        ...    grep -q "${IPS['${vm}']['${REP_BR}']['ip']}.*${vm}" /etc/hosts
+        Run Keyword If    ${rc} != 0        Run 
+        ...        echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
+    END
+
+    FOR     ${vm}   IN  @{VMS}
         Log     Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/${vm}.qcow2     
         ...     console=True
         Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
@@ -47,12 +55,6 @@ Set Up Lab
 
         ${rc}   ${uuid} =   Run And Return Rc And Output
         ...     cat /proc/sys/kernel/random/uuid
-
-        Log        ${vm}: Add VM IP in /etc/hosts.    console=True
-        ${rc} =        Run And Return Rc
-        ...        grep -q "${IPS}[${vm}][1].*${vm}" /etc/hosts
-        Run Keyword If    ${rc} != 0        Run 
-        ...        echo "${IPS}[${vm}][1] ${vm} # ${OS}"|sudo tee -a /etc/hosts
 
         Log     Create XML for ${vm}    console=True
         Create XML  ${vm}   ${uuid}    default.tpl
@@ -134,29 +136,26 @@ Create OSD Disks
 
 Create Interfaces
     [Documentation]        Create Interfaces
-    [Arguments]        ${vm}    ${ip_list}
+    [Arguments]        ${vm}    ${ifaces}
     ${index} =        Set Variable    0
     Remove File     ${TEMPDIR}/ifcfg*
-    FOR     ${ip}   IN         @{ip_list}
-        Log        ${index}:${ip}        console=True
-        Attach Interface   ${vm}    ${index}   ${ip}
+    FOR     ${br}   IN         @{ifaces}
+        Log        ${vm}:${br}:${ifaces['${br}']}        console=True
+        ${netinfo} =    Set Variable    ${ifaces['${br}']}
+
+        ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
+        Should Be Equal As Integers     ${rc}   0
+
+        Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
+
+        Run Keyword If    "${netinfo['ip']}" == ""
+        ...         Create File     ${TEMPDIR}/ifcfg-eth${index}
+        ...         DEVICE=eth${index}\nHWADDR=${mac}\nONBOOT=yes
+        ...     ELSE IF     'gw' in ${netinfo}
+        ...         Create File     ${TEMPDIR}/ifcfg-eth${index}
+        ...         DEVICE=eth${index}\nHWADDR=${mac}\nGATEWAY=${GW}\nIPADDR=${ip}\nNETMASK=255.255.255.0\nONBOOT=yes
+        ...     ELSE
+        ...         Create File     ${TEMPDIR}/ifcfg-eth${index}
+        ...         DEVICE=eth${index}\nHWADDR=${mac}\nIPADDR=${ip}\nNETMASK=255.255.255.0\nONBOOT=yes
         ${index} =        Evaluate    ${index} + 1
     END
-
-Attach Interface
-    [Arguments]     ${vm}   ${index}    ${ip}
-    ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
-    Should Be Equal As Integers     ${rc}   0
-
-    Run     virsh attach-interface --domain ${vm} --type bridge --source ${BR_NAME}${index} --model virtio --mac ${mac} --persistent
-
-    Run Keyword If  "${ip}" == "" 
-    ...     Create File     ${TEMPDIR}/ifcfg-eth${index}
-    ...     DEVICE=eth${index}\nHWADDR=${mac}\nONBOOT=yes
-    ...     ELSE IF     "${index}" == "0"
-    ...     Create File     ${TEMPDIR}/ifcfg-eth${index}
-    ...     DEVICE=eth${index}\nHWADDR=${mac}\nGATEWAY=${GW}\nIPADDR=${ip}\nNETMASK=255.255.255.0\nONBOOT=yes
-    ...     ELSE
-    ...     Create File     ${TEMPDIR}/ifcfg-eth${index}
-    ...     DEVICE=eth${index}\nHWADDR=${mac}\nIPADDR=${ip}\nNETMASK=255.255.255.0\nONBOOT=yes
-    

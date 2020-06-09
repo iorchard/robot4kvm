@@ -53,7 +53,7 @@ Set Up Lab
         ${rc} =        Run And Return Rc
         ...    grep -q "${IPS['${vm}']['${REP_BR}']['ip']}.*${vm}" /etc/hosts
         Run Keyword If    ${rc} != 0        Run 
-        ...		echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
+        ...        echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
     END
 
     FOR     ${vm}   IN  @{VMS}
@@ -61,12 +61,12 @@ Set Up Lab
         ...     console=True
         Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
 
-		Log		Resize the image to ${DISK}[${vm}]G.	console=True
+        Log        Resize the image to ${DISK}[${vm}]G.    console=True
         ${rc} =     Run And Return Rc
         ...     qemu-img resize ${DST_DIR}/${vm}.qcow2 ${DISK}[${vm}]G
         Should Be Equal As Integers     ${rc}   0
 
-		Log		Resize root partition to 100%.		console=True
+        Log        Resize root partition to 100%.        console=True
         ${rc} =     Run And Return Rc
         ...     virt-resize --expand /dev/sda1 ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
         Should Be Equal As Integers     ${rc}   0
@@ -113,21 +113,21 @@ Preflight
     Should Be Equal As Integers     ${rc}   0
 
     Log     Check directories       console=True
-	${rc} =		Run And Return Rc	ls -ld ${SRC_DIR}
-	Run Keyword If		${rc} != 0		Create Directory	${SRC_DIR}
-	${rc} =		Run And Return Rc	ls -ld ${DST_DIR}
-	Run Keyword If		${rc} != 0		Create Directory	${DST_DIR}
-	${rc} =		Run And Return Rc	ls -ld ${OSD_DIR}
-	Run Keyword If		${rc} != 0		Create Directory	${OSD_DIR}
+    ${rc} =        Run And Return Rc    ls -ld ${SRC_DIR}
+    Run Keyword If        ${rc} != 0        Create Directory    ${SRC_DIR}
+    ${rc} =        Run And Return Rc    ls -ld ${DST_DIR}
+    Run Keyword If        ${rc} != 0        Create Directory    ${DST_DIR}
+    ${rc} =        Run And Return Rc    ls -ld ${OSD_DIR}
+    Run Keyword If        ${rc} != 0        Create Directory    ${OSD_DIR}
 
-	Log		Create ${SSHKEY} if not exists		console=True
+    Log        Create ${SSHKEY} if not exists        console=True
     ${rc} =        Run And Return Rc    ls ${SSHKEY}
     Run Keyword If    ${rc} != 0        
-	...		Run		ssh-keygen -t rsa -N '' -f ${SSHKEY}
+    ...        Run        ssh-keygen -t rsa -N '' -f ${SSHKEY}
 
 Cleanup
     Comment     Clean up the debris.
-    Log     Remove temporary files.		console=True
+    Log     Remove temporary files.        console=True
     Remove File     ${SRC_DIR}/SHA256SUM*
     Remove Files     ${TEMPDIR}/xml
 
@@ -164,17 +164,17 @@ Create Interfaces
     Remove File     ${TEMPDIR}/eth*
     FOR     ${br}   IN      @{ifaces}
         Log     ${vm}:${br}:${ifaces['${br}']}      console=True
-		${netinfo} =	Set Variable	${ifaces['${br}']}
+        ${netinfo} =    Set Variable    ${ifaces['${br}']}
 
-		${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
-		Should Be Equal As Integers     ${rc}   0
+        ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
+        Should Be Equal As Integers     ${rc}   0
 
-		Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
+        Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
 
-		Run Keyword If	"${netinfo['ip']}" == ""
-		...		Create File		${TEMPDIR}/eth${i}
-		...		auto eth${i}\niface eth${i} inet manual\n
-		...		ELSE IF		'gw' in ${netinfo}
+        Run Keyword If    "${netinfo['ip']}" == ""
+        ...        Create File        ${TEMPDIR}/eth${i}
+        ...        auto eth${i}\niface eth${i} inet manual\n
+        ...        ELSE IF        'gw' in ${netinfo}
         ...     Create File     ${TEMPDIR}/eth${i}
         ...     auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tgateway ${netinfo['gw']}\n
         ...     ELSE
