@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+import os
+
+# user account in VM.
+USERID = 'jijisa'
+
+PREFIX = 'jijisa-dev'
+# VM location and size.
+SRC_DIR = '/data/' + os.environ.get('USER') + '/images'
+DST_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+
+# machine list.
+VMS = [
+        PREFIX
+]
+
+# machine role list.
+ROLES = {
+        PREFIX: ['master'],
+}
+CORES = {
+        PREFIX: 16,
+}
+MEM = {
+        PREFIX: 16,
+}
+DISK = {
+        PREFIX: 200,
+}
+# For VM with storage role
+OSD_NUM = 3     # The number of osd disks for VM with storage role
+OSD_SIZE = 10   # OSD disk size in GiB.
+# machine IP list.
+NET = { 'ext': '192.168.20',
+        'mgmt': '192.168.21',
+}
+GW = '192.168.20.1'    # Gateway IP address
+DNS = '8.8.8.8'
+IP = 2  # The last octet of the IP address to begin.
+BR_NAME = 'br'
+IPS = {
+    PREFIX: [
+        NET['ext'] + '.' + str(IP),
+        NET['mgmt'] + '.' + str(IP),
+    ],
+}
+# which OS you choose. DEB or CENTOS?
+OS = 'DEB'
+
+# Do not edit below this line!!!
+# debian openstack image 
+# disk total size: 2G
+# Login account: debian
+DEB_IMG_URL = 'http://cdimage.debian.org/cdimage/openstack/current-10'
+DEB_VER = '10'
+DEB_ARCH = 'amd64'
+DEB_IMG = 'debian-{}-openstack-{}.qcow2'.format(DEB_VER, DEB_ARCH)
+DEB_UID = 'debian'
+DEB_KEYSERVER = 'keyring.debian.org'
+# Find out keyid using 'gpg --verify SHA256SUMS.sign' output.
+# And Run gpg --keyserver ${DEB_KEYSERVER} --recv <keyid>
+DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B' # debian buster key
+# centos openstack image 
+# disk total size: 8G
+# Login account: centos
+CENTOS_VER = '7'
+CENTOS_IMG_URL = 'http://cloud.centos.org/centos/{}/images'.format(CENTOS_VER)
+CENTOS_ARCH = 'x86_64'
+CENTOS_IMG = 'CentOS-{}-{}-GenericCloud.qcow2'.format(CENTOS_VER, CENTOS_ARCH)
+CENTOS_UID = 'centos'
+
+IMG_URL = eval('{}_IMG_URL'.format(OS))
+VER = eval('{}_VER'.format(OS))
+ARCH = eval('{}_ARCH'.format(OS))
+IMG = eval('{}_IMG'.format(OS))
+UID = eval('{}_UID'.format(OS))
+
+SSHKEY = os.environ.get('HOME') + '/.ssh/id_rsa'
+
+#print(OS, IMG_URL, IMG)

@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+import os
+
+# user account in VM.
+USERID = 'clex'
+
+PREFIX = 'taco-std-'
+# VM location and size.
+SRC_DIR = '/data/' + os.environ.get('USER') + '/images'
+DST_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+
+# machine list.
+VMS = [
+        PREFIX + 'sgw',
+]
+
+# machine role list.
+ROLES = {
+        PREFIX + 'sgw': ['control'],
+}
+CORES = {
+        PREFIX + 'sgw': 4,
+}
+MEM = {
+        PREFIX + 'sgw': 4,
+}
+DISK = {
+        PREFIX + 'sgw': 20,
+}
+# For VM with storage role
+OSD_NUM = 1     # The number of osd disks for VM with storage role
+OSD_SIZE = 50   # OSD disk size in GiB.
+# machine IP list.
+NET = { 
+        'ext':      '192.168.20',
+        'mgmt':     '192.168.21',
+}
+IP = 9  # The last octet of the IP address to begin.
+REP_BR = 'br1'  # Select this bridge's ip to insert into /etc/hosts
+IPS = {
+    PREFIX + 'sgw': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+        },
+    },
+}
+
+# which OS you choose. DEB or CENTOS?
+OS = 'CENTOS'
+
+# Do not edit below this line!!!
+# debian openstack image 
+# disk total size: 2G
+# Login account: debian
+DEB_IMG_URL = 'http://cdimage.debian.org/cdimage/openstack/current-10'
+DEB_VER = '10'
+DEB_ARCH = 'amd64'
+DEB_IMG = 'debian-{}-openstack-{}.qcow2'.format(DEB_VER, DEB_ARCH)
+DEB_UID = 'debian'
+DEB_KEYSERVER = 'keyring.debian.org'
+# Find out keyid using 'gpg --verify SHA256SUMS.sign' output.
+# And Run gpg --keyserver ${DEB_KEYSERVER} --recv <keyid>
+DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B' # debian buster key
+# centos openstack image 
+# disk total size: 8G
+# Login account: centos
+CENTOS_VER = '7'
+CENTOS_IMG_URL = 'http://cloud.centos.org/centos/{}/images'.format(CENTOS_VER)
+CENTOS_ARCH = 'x86_64'
+CENTOS_IMG = 'CentOS-{}-{}-GenericCloud.qcow2'.format(CENTOS_VER, CENTOS_ARCH)
+CENTOS_UID = 'centos'
+
+IMG_URL = eval('{}_IMG_URL'.format(OS))
+VER = eval('{}_VER'.format(OS))
+ARCH = eval('{}_ARCH'.format(OS))
+IMG = eval('{}_IMG'.format(OS))
+UID = eval('{}_UID'.format(OS))
+
+SSHKEY = os.environ.get('HOME') + '/.ssh/id_rsa'
+
+#print(OS, IMG_URL, IMG)

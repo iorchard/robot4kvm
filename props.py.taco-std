@@ -1,0 +1,314 @@
+#!/usr/bin/env python
+import os
+
+# user account in VM.
+USERID = 'clex'
+
+PREFIX = 'taco-std-'
+# VM location and size.
+SRC_DIR = '/data/' + os.environ.get('USER') + '/images'
+DST_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+
+# machine list.
+VMS = [
+        PREFIX + 'sgw',
+        PREFIX + 'ctrl1',
+        PREFIX + 'ctrl2',
+        PREFIX + 'ctrl3',
+        PREFIX + 'comp1',
+        PREFIX + 'comp2',
+        PREFIX + 'ceph1',
+        PREFIX + 'ceph2',
+        PREFIX + 'ceph3',
+]
+
+# machine role list.
+ROLES = {
+        PREFIX + 'sgw': ['sgw'],
+        PREFIX + 'ctrl1': ['control'],
+        PREFIX + 'ctrl2': ['control'],
+        PREFIX + 'ctrl3': ['control'],
+        PREFIX + 'comp1': ['compute'],
+        PREFIX + 'comp2': ['compute'],
+        PREFIX + 'ceph1': ['storage'],
+        PREFIX + 'ceph2': ['storage'],
+        PREFIX + 'ceph3': ['storage'],
+}
+CORES = {
+        PREFIX + 'sgw': 4,
+        PREFIX + 'ctrl1': 16,
+        PREFIX + 'ctrl2': 16,
+        PREFIX + 'ctrl3': 16,
+        PREFIX + 'comp1': 32,
+        PREFIX + 'comp2': 32,
+        PREFIX + 'ceph1': 16,
+        PREFIX + 'ceph2': 16,
+        PREFIX + 'ceph3': 16,
+}
+MEM = {
+        PREFIX + 'sgw': 4,
+        PREFIX + 'ctrl1': 64,
+        PREFIX + 'ctrl2': 64,
+        PREFIX + 'ctrl3': 64,
+        PREFIX + 'comp1': 32,
+        PREFIX + 'comp2': 32,
+        PREFIX + 'ceph1': 8,
+        PREFIX + 'ceph2': 8,
+        PREFIX + 'ceph3': 8,
+}
+DISK = {
+        PREFIX + 'sgw': 20,
+        PREFIX + 'ctrl1': 300,
+        PREFIX + 'ctrl2': 100,
+        PREFIX + 'ctrl3': 100,
+        PREFIX + 'comp1': 50,
+        PREFIX + 'comp2': 50,
+        PREFIX + 'ceph1': 50,
+        PREFIX + 'ceph2': 50,
+        PREFIX + 'ceph3': 50,
+}
+# For VM with storage role
+OSD_NUM = 3     # The number of osd disks for VM with storage role
+OSD_SIZE = 200   # OSD disk size in GiB.
+# machine IP list.
+NET = { 
+        'ext':      '192.168.20',
+        'mgmt':     '192.168.21',
+        'provider': '192.168.22',
+        'tenant':   '192.168.23',
+        'ceph-pub': '192.168.24',
+        'ceph-cls': '192.168.25',
+}
+IP = 11  # The last octet of the IP address to begin.
+REP_BR = 'br1'  # Select this bridge's ip to insert into /etc/hosts
+IPS = {
+    PREFIX + 'sgw': {
+        'br0': {
+            'ip': NET['ext'] + '.' + '9',
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + '9',
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'ctrl1': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': NET['tenant'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'ctrl2': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP+1),
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+1),
+            'nm': '255.255.255.0',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': NET['tenant'] + '.' + str(IP+1),
+            'nm': '255.255.255.0',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+1),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'ctrl3': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP+2),
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+2),
+            'nm': '255.255.255.0',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': NET['tenant'] + '.' + str(IP+2),
+            'nm': '255.255.255.0',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+2),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'comp1': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP+3),
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+3),
+            'nm': '255.255.255.0',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': NET['tenant'] + '.' + str(IP+3),
+            'nm': '255.255.255.0',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+3),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'comp2': {
+        'br0': {
+            'ip': NET['ext'] + '.' + str(IP+4),
+            'nm': '255.255.255.0',
+            'gw': NET['ext'] + '.' + '1',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+4),
+            'nm': '255.255.255.0',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': NET['tenant'] + '.' + str(IP+4),
+            'nm': '255.255.255.0',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+4),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'ceph1': {
+        'br0': {
+            'ip': '',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+5),
+            'nm': '255.255.255.0',
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': '',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+5),
+            'nm': '255.255.255.0',
+        },
+        'br5': {
+            'ip': NET['ceph-cls'] + '.' + str(IP+5),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'ceph2': {
+        'br0': {
+            'ip': '',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+6),
+            'nm': '255.255.255.0',
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': '',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+6),
+            'nm': '255.255.255.0',
+        },
+        'br5': {
+            'ip': NET['ceph-cls'] + '.' + str(IP+6),
+            'nm': '255.255.255.0',
+        },
+    },
+    PREFIX + 'ceph3': {
+        'br0': {
+            'ip': '',
+        },
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+7),
+            'nm': '255.255.255.0',
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+        'br2': {
+            'ip': '',
+        },
+        'br3': {
+            'ip': '',
+        },
+        'br4': {
+            'ip': NET['ceph-pub'] + '.' + str(IP+7),
+            'nm': '255.255.255.0',
+        },
+        'br5': {
+            'ip': NET['ceph-cls'] + '.' + str(IP+7),
+            'nm': '255.255.255.0',
+        },
+    },
+}
+
+# which OS you choose. DEB or CENTOS?
+OS = 'CENTOS'
+
+# Do not edit below this line!!!
+# debian openstack image 
+# disk total size: 2G
+# Login account: debian
+DEB_IMG_URL = 'http://cdimage.debian.org/cdimage/openstack/current-10'
+DEB_VER = '10'
+DEB_ARCH = 'amd64'
+DEB_IMG = 'debian-{}-openstack-{}.qcow2'.format(DEB_VER, DEB_ARCH)
+DEB_UID = 'debian'
+DEB_KEYSERVER = 'keyring.debian.org'
+# Find out keyid using 'gpg --verify SHA256SUMS.sign' output.
+# And Run gpg --keyserver ${DEB_KEYSERVER} --recv <keyid>
+DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B' # debian buster key
+# centos openstack image 
+# disk total size: 8G
+# Login account: centos
+CENTOS_VER = '7'
+CENTOS_IMG_URL = 'http://cloud.centos.org/centos/{}/images'.format(CENTOS_VER)
+CENTOS_ARCH = 'x86_64'
+CENTOS_IMG = 'CentOS-{}-{}-GenericCloud-1907.qcow2'.format(CENTOS_VER, CENTOS_ARCH)
+CENTOS_UID = 'centos'
+
+IMG_URL = eval('{}_IMG_URL'.format(OS))
+VER = eval('{}_VER'.format(OS))
+ARCH = eval('{}_ARCH'.format(OS))
+IMG = eval('{}_IMG'.format(OS))
+UID = eval('{}_UID'.format(OS))
+
+SSHKEY = os.environ.get('HOME') + '/.ssh/id_rsa'
+
+#print(OS, IMG_URL, IMG)

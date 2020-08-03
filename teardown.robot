@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Tear down ceph cluster on a lab.
+Documentation    Tear down a lab.
 Suite Setup      Preflight
 Suite Teardown   Cleanup
 Library         OperatingSystem
@@ -8,7 +8,7 @@ Variables       props.py
 
 *** Tasks ***
 Tear Down Ceph Lab
-    [Documentation]     Tear down virtual machines for ceph lab.
+    [Documentation]     Tear down virtual machines for a lab.
     [Tags]    teardown
     FOR     ${vm}   IN  @{VMS}
         Log     Stop ${vm} and wait for at most 60 seconds.     console=True
