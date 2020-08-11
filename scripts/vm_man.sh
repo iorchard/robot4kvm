@@ -62,7 +62,7 @@ fi
 
 # Edit the following variables until "Do not edit below!!!"
 # packages to install
-IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl"
+IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl,sshpass,git"
 # packages to remove
 RPKGS="vim-tiny,nano,joe"
 # DNS server
@@ -91,11 +91,12 @@ $VIRTC -a ${IMGFILE} \
     $(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d;done) \
     --upload data/grub:/etc/default/grub \
     --run-command "update-grub" \
-	--run-command "dpkg-reconfigure openssh-server" \
-	--run-command "adduser --disabled-password --gecos '' ${USERID}" \
-	--run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \
-	--password ${USERID}:password:${USERPW} \
-	--ssh-inject ${USERID} \
-	--timezone "${TIMEZONE}" \
-	--firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
+    --run-command "dpkg-reconfigure openssh-server" \
+    --run-command "adduser --disabled-password --gecos '' ${USERID}" \
+    --run-command "gpasswd -a ${USERID} sudo" \
+    --run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \
+    --password ${USERID}:password:${USERPW} \
+    --ssh-inject ${USERID} \
+    --timezone "${TIMEZONE}" \
+    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
     --run-command "apt-get purge --autoremove -y cloud-init" 
