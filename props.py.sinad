@@ -12,21 +12,26 @@ OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
 
 # machine list.
 VMS = [
-        PREFIX + '0',
+        PREFIX + '0', # For baremetal sinad
+        PREFIX + '1', # For container sinad
 ]
 
 # machine role list.
 ROLES = {
         PREFIX + '0': ['storage'],
+        PREFIX + '1': ['storage'],
 }
 CORES = {
         PREFIX + '0': 4,
+        PREFIX + '1': 4,
 }
 MEM = {
         PREFIX + '0': 2,
+        PREFIX + '1': 2,
 }
 DISK = {
         PREFIX + '0': 20,
+        PREFIX + '1': 20,
 }
 # For VM with storage role
 OSD_NUM = 1     # The number of osd disks for VM with storage role
@@ -41,6 +46,13 @@ IPS = {
     PREFIX + '0': {
         'br1': {
             'ip': NET['mgmt'] + '.' + str(IP),
+            'nm': '255.255.255.0',
+            'gw': NET['mgmt'] + '.' + '1',
+        },
+    },
+    PREFIX + '1': {
+        'br1': {
+            'ip': NET['mgmt'] + '.' + str(IP+1),
             'nm': '255.255.255.0',
             'gw': NET['mgmt'] + '.' + '1',
         },

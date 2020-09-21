@@ -13,8 +13,6 @@ OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
 # machine list.
 VMS = [
         PREFIX + 'm1',
-        PREFIX + 'm2',
-        PREFIX + 'm3',
         PREFIX + 'w1',
         PREFIX + 'w2',
 ]
@@ -22,34 +20,26 @@ VMS = [
 # machine role list.
 ROLES = {
         PREFIX + 'm1': ['master'],
-        PREFIX + 'm2': ['master'],
-        PREFIX + 'm3': ['master'],
-        PREFIX + 'w1': ['worker'],
-        PREFIX + 'w2': ['worker'],
+        PREFIX + 'w1': ['storage'],
+        PREFIX + 'w2': ['storage'],
 }
 CORES = {
         PREFIX + 'm1': 8,
-        PREFIX + 'm2': 8,
-        PREFIX + 'm3': 8,
         PREFIX + 'w1': 8,
         PREFIX + 'w2': 8,
 }
 MEM = {
         PREFIX + 'm1': 16,
-        PREFIX + 'm2': 16,
-        PREFIX + 'm3': 16,
         PREFIX + 'w1': 16,
         PREFIX + 'w2': 16,
 }
 DISK = {
         PREFIX + 'm1': 100,
-        PREFIX + 'm2': 100,
-        PREFIX + 'm3': 100,
         PREFIX + 'w1': 100,
         PREFIX + 'w2': 100,
 }
 # For VM with storage role
-OSD_NUM = 3     # The number of osd disks for VM with storage role
+OSD_NUM = 1    # The number of osd disks for VM with storage role
 OSD_SIZE = 100   # OSD disk size in GiB.
 # machine IP list.
 NET = {
@@ -69,7 +59,7 @@ IPS = {
             'ip': '',
         },
     },
-    PREFIX + 'm2': {
+    PREFIX + 'w1': {
         'br1': {
             'ip': NET['mgmt'] + '.' + str(IP+1),
             'nm': 24,
@@ -79,29 +69,9 @@ IPS = {
             'ip': '',
         },
     },
-    PREFIX + 'm3': {
-        'br1': {
-            'ip': NET['mgmt'] + '.' + str(IP+2),
-            'nm': 24,
-            'gw': NET['mgmt'] + '.' + '1',
-        },
-        'br2': {
-            'ip': '',
-        },
-    },
-    PREFIX + 'w1': {
-        'br1': {
-            'ip': NET['mgmt'] + '.' + str(IP+3),
-            'nm': 24,
-            'gw': NET['mgmt'] + '.' + '1',
-        },
-        'br2': {
-            'ip': '',
-        },
-    },
     PREFIX + 'w2': {
         'br1': {
-            'ip': NET['mgmt'] + '.' + str(IP+4),
+            'ip': NET['mgmt'] + '.' + str(IP+2),
             'nm': 24,
             'gw': NET['mgmt'] + '.' + '1',
         },

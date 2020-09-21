@@ -12,12 +12,12 @@ ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 @{LETTERS}      a   b   c   d   e   f   g   h
 
 *** Tasks ***
-Test
-    [Documentation]     Test
-    [Tags]  test
-    FOR     ${vm}   IN  @{VMS}
-        Create Interfaces    ${vm}  ${IPS}[${vm}]
-    END
+#Test
+#    [Documentation]     Test
+#    [Tags]  test
+#    FOR     ${vm}   IN  @{VMS}
+#        Create Interfaces    ${vm}  ${IPS}[${vm}]
+#    END
 
 Get The Image
     [Documentation]     Get centos openstack image.
