@@ -88,6 +88,7 @@ $VIRTC -a ${IMGFILE} \
     --install ${IPKGS} \
     --uninstall ${RPKGS} \
     --upload /etc/hosts:/etc/hosts \
+    --upload data/interfaces:/etc/network/interfaces \
     $(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d;done) \
     --upload data/grub:/etc/default/grub \
     --run-command "update-grub" \
@@ -95,6 +96,7 @@ $VIRTC -a ${IMGFILE} \
     --run-command "adduser --disabled-password --gecos '' ${USERID}" \
     --run-command "gpasswd -a ${USERID} sudo" \
     --run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \
+    --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
     --password ${USERID}:password:${USERPW} \
     --ssh-inject ${USERID} \
     --timezone "${TIMEZONE}" \
