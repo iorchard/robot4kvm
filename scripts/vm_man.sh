@@ -64,7 +64,7 @@ fi
 # packages to install
 IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl,sshpass,git"
 # packages to remove
-RPKGS="vim-tiny,nano,joe"
+RPKGS="vim-tiny,nano,joe,resolvconf"
 # DNS server
 DNSSERVER="8.8.8.8"
 # Timezone
