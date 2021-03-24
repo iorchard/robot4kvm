@@ -64,7 +64,7 @@ fi
 # packages to install
 IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl,sshpass,git"
 # packages to remove
-RPKGS="vim-tiny,nano,joe,resolvconf"
+RPKGS="vim-tiny,nano,joe"
 # DNS server
 DNSSERVER="8.8.8.8"
 # Timezone
@@ -100,5 +100,4 @@ $VIRTC -a ${IMGFILE} \
     --password ${USERID}:password:${USERPW} \
     --ssh-inject ${USERID} \
     --timezone "${TIMEZONE}" \
-    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
     --run-command "apt-get purge --autoremove -y cloud-init" 

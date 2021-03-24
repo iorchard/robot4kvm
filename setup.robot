@@ -176,10 +176,10 @@ Create Interfaces
         ...         auto eth${i}\niface eth${i} inet manual\n
         ...     ELSE IF        'gw' in ${netinfo}
         ...         Create File        ${TEMPDIR}/eth${i}
-        ...         auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tgateway ${netinfo['gw']}\n
+        ...         auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tdns-nameserver 8.8.8.8\n\tgateway ${netinfo['gw']}\n
         ...     ELSE
         ...         Create File        ${TEMPDIR}/eth${i}
-        ...         auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n
+        ...         auto eth${i}\niface eth${i} inet static\n\taddress ${netinfo['ip']}/${netinfo['nm']}\n\tdns-nameserver 8.8.8.8\n
 
         ${i} =      Evaluate    ${i} + 1
     END
