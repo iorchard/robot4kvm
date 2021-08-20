@@ -62,42 +62,22 @@ fi
 
 # Edit the following variables until "Do not edit below!!!"
 # packages to install
-IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl,sshpass,git"
+IPKGS="less,sudo,vim,man-db,epel-release,bind-utils,telnet,curl,python3"
 # packages to remove
-RPKGS="vim-tiny,nano,joe"
+RPKGS=""
 # DNS server
 DNSSERVER="8.8.8.8"
 # Timezone
 TIMEZONE="Asia/Seoul"
 # Do not edit below!!!
 
-if [ x"$USERID" != x ]
-then
-    # read USERPW
-    if [ -z ${USERPW+x} ]
-    then
-        echo "USERPW variable is unset."
-        exit 1
-    fi
-fi
-echo
-
-#    --update \
-#    --run-command "echo '${USERID} ALL=(ALL:ALL) ALL' > /etc/sudoers.d/99-${USERID}" \
-#    --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
+#    --uninstall ${RPKGS} \
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
     --install ${IPKGS} \
-    --uninstall ${RPKGS} \
     --upload /etc/hosts:/etc/hosts \
-    --upload data/interfaces:/etc/network/interfaces \
-    $(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d;done) \
-    --upload data/grub:/etc/default/grub \
-    --run-command "update-grub" \
-    --run-command "dpkg-reconfigure openssh-server" \
-    --run-command "adduser --disabled-password --gecos '' ${USERID}" \
-    --run-command "gpasswd -a ${USERID} sudo" \
-    --password ${USERID}:password:${USERPW} \
-    --ssh-inject ${USERID} \
-    --timezone "${TIMEZONE}" \
-    --run-command "apt-get purge --autoremove -y cloud-init" 
+    $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
+	--ssh-inject ${USERID} \
+	--firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
+	--firstboot-command "dnf -y install sshpass" \
+    --run-command "dnf -y remove cloud-init"

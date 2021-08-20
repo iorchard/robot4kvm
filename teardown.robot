@@ -7,16 +7,25 @@ Library         Process
 Variables       props.py
 
 *** Tasks ***
-Tear Down Ceph Lab
-    [Documentation]     Tear down virtual machines for a lab.
-    [Tags]    teardown
+Stop virtual machines
+    [Documentation]     Stop virtual machines
+    [Tags]    stop
     FOR     ${vm}   IN  @{VMS}
         Log     Stop ${vm} and wait for at most 60 seconds.     console=True
         Run     virsh destroy ${vm}
         Wait Until Keyword Succeeds     60s     5s  Check VM State  ${vm}
+    END
 
+Delete virtual machines
+    [Documentation]     Delete virtual machines
+    [Tags]    delete
+    FOR     ${vm}   IN  @{VMS}
         Log     Undefine ${vm}     console=True
         Run     virsh undefine ${vm}
+
+        Log     Remove ssh host keys of ${vm}     console=True
+        Run     ssh-keygen -R ${vm}
+        Run     ssh-keygen -R ${IPS['${vm}']['${REP_BR}']['ip']}
         
         Log     Remove ${vm}     console=True
         Remove File     ${DST_DIR}/${vm}.qcow2

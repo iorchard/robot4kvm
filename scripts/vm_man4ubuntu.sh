@@ -94,11 +94,14 @@ $VIRTC -a ${IMGFILE} \
     --upload data/grub:/etc/default/grub \
     --run-command "update-grub" \
     --run-command "dpkg-reconfigure openssh-server" \
+    --run-command "sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config" \
     --run-command "adduser --disabled-password --gecos '' ${USERID}" \
     --run-command "gpasswd -a ${USERID} sudo" \
-    --run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \
+    --run-command "echo '${USERID} ALL=(ALL:ALL) ALL' > /etc/sudoers.d/99-${USERID}" \
     --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
     --password ${USERID}:password:${USERPW} \
     --ssh-inject ${USERID} \
     --timezone "${TIMEZONE}" \
+    --firstboot-command "resize2fs /dev/sda1" \
+    --firstboot-command "netplan apply" \
     --run-command "apt-get purge --autoremove -y cloud-init" 

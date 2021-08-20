@@ -62,7 +62,7 @@ fi
 
 # Edit the following variables until "Do not edit below!!!"
 # packages to install
-IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl"
+IPKGS="less,sudo,vim,man-db,dnsutils,telnet,curl,sshpass,python3"
 # packages to remove
 RPKGS="vim-tiny,nano,joe"
 # DNS server
@@ -82,11 +82,10 @@ then
 fi
 echo
 
-#    --update \ # not update for taco machines.
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
     --upload /etc/hosts:/etc/hosts \
-    --write /etc/selinux/config:SELINUX=disaled\nSELINUXTYPE=targeted \
+    --write /etc/selinux/config:SELINUX=disabled\nSELINUXTYPE=targeted \
     $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
 	--run-command "adduser ${USERID}" \
 	--run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \

@@ -36,11 +36,11 @@ Set Up Lab
         ...     console=True
         Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
 
-#        Log        Resize the image to ${DISK}[${vm}]G.    console=True
-#        ${rc} =     Run And Return Rc
-#        ...     qemu-img resize ${DST_DIR}/${vm}.qcow2 ${DISK}[${vm}]G
-#        Should Be Equal As Integers     ${rc}   0
-#
+        Log        Resize the image to ${DISK}[${vm}]G.    console=True
+        ${rc} =     Run And Return Rc
+        ...     qemu-img resize ${DST_DIR}/${vm}.qcow2 ${DISK}[${vm}]G
+        Should Be Equal As Integers     ${rc}   0
+
 #        Log        Resize root partition to 100%.        console=True
 #        ${rc} =     Run And Return Rc
 #        ...     virt-resize --expand /dev/sda1 ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
