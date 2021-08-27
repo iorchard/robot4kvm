@@ -12,21 +12,6 @@ ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 @{LETTERS}      a   b   c   d   e   f   g   h
 
 *** Tasks ***
-#Test
-#    [Documentation]     Test
-#    [Tags]  test
-#    FOR     ${vm}   IN  @{VMS}
-#        Create Interfaces    ${vm}  ${IPS}[${vm}]
-#    END
-
-#Get The Image
-#    [Documentation]     Get rocky cloud image.
-#    [Tags]  preflight
-#    Log     Get centos image from ${IMG_URL}/${IMG}   console=True
-#    ${rc} =   Run Keyword If  os.path.exists("${SRC_DIR}/${IMG}") == False
-#    ...     Run And Return Rc
-#    ...     curl -sLo ${SRC_DIR}/${IMG} ${IMG_URL}/${IMG}
-
 Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
@@ -36,6 +21,7 @@ Set Up Lab
         ...    grep -q "${IPS['${vm}']['${REP_BR}']['ip']}.*${vm}" /etc/hosts
         Run Keyword If    ${rc} != 0        Run 
         ...        echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
+        Run     echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a data/hosts
     END
 
     FOR     ${vm}   IN  @{VMS}

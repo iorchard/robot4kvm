@@ -72,12 +72,12 @@ TIMEZONE="Asia/Seoul"
 # Do not edit below!!!
 
 #    --uninstall ${RPKGS} \
+#    --firstboot-command "dnf -y install sshpass" \
+#    --install ${IPKGS} \
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
-    --install ${IPKGS} \
-    --upload /etc/hosts:/etc/hosts \
+    --upload data/hosts:/etc/hosts \
     $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
 	--ssh-inject ${USERID} \
 	--firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
-	--firstboot-command "dnf -y install sshpass" \
     --run-command "dnf -y remove cloud-init"
