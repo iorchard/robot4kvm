@@ -15,6 +15,8 @@ ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
+    Run     echo "127.0.0.1 localhost"|sudo tee data/hosts
+    Log     \n      console=True
     FOR     ${vm}   IN  @{VMS}
         Log        ${vm}: Add VM IP in /etc/hosts.    console=True
         ${rc} =        Run And Return Rc
@@ -66,6 +68,7 @@ Set Up Lab
 Start Lab
     [Documentation]     Start virtual machines. 
     [Tags]    flying
+    Log     \n      console=True
     FOR     ${vm}   IN  @{VMS}
         Log     Start ${vm}     console=True
         ${rc} =     Run And Return Rc     virsh start ${vm}

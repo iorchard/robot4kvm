@@ -10,6 +10,7 @@ Variables       props.py
 Stop virtual machines
     [Documentation]     Stop virtual machines
     [Tags]    stop
+    Log     \n     console=True
     FOR     ${vm}   IN  @{VMS}
         Log     Stop ${vm} and wait for at most 60 seconds.     console=True
         Run     virsh destroy ${vm}
@@ -19,6 +20,7 @@ Stop virtual machines
 Delete virtual machines
     [Documentation]     Delete virtual machines
     [Tags]    delete
+    Log     \n     console=True
     FOR     ${vm}   IN  @{VMS}
         Log     Undefine ${vm}     console=True
         Run     virsh undefine ${vm}
