@@ -17,10 +17,14 @@ Here is the automated process.
 Pre-requisite
 --------------
 
+Install libguestfs-tools package.::
+
+   $ sudo apt update && sudo apt install -y libguestfs-tools
+
 Install robot framework. I always create virtual env to 
 have python environment.::
 
-    $ sudo apt update && sudo apt install -y python3-venv dirmngr
+    $ sudo apt install -y python3-venv dirmngr
     $ python3 -m venv ~/.envs/robot
     $ source ~/.envs/robot/bin/activate
     (robot) $ pip install wheel

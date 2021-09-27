@@ -21,7 +21,7 @@ Edit ks.cfg to put root and user password.::
    rootpw --iscrypted <sha512_root_password>
    user --name=clex --iscrypted --password <sha512_user_password>
 
-
+Modify NET_BR in rocky_build.sh for your env.
 Run rocky_build.sh.
 
 After installation is done, log in as a root::
