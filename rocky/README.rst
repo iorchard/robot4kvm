@@ -29,6 +29,12 @@ After installation is done, log in as a root::
    localhost login: root
    Password: <root-password-in-kickstart>
 
+Set up network for your envionment.::
+
+   # ip address add <ip>/<cidr> dev eth0
+   # ip route add default via <router_ip>
+   # echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 upgrade packages and reboot.::
 
    # dnf -y update
@@ -36,6 +42,9 @@ upgrade packages and reboot.::
 
 Log in again and install what you want.::
 
+   # ip address add <ip>/<cidr> dev eth0
+   # ip route add default via <router_ip>
+   # echo "nameserver 8.8.8.8" > /etc/resolv.conf
    # dnf -y install cloud-utils-growpart curl epel-release python3 bind-utils
    # dnf -y install openssh-server cloud-init sshpass
 
@@ -51,7 +60,7 @@ Configure cloud-init and set clex as default login user::
        lock_passwd: false
        gecos: SKB CloudX User
        groups: [adm, systemd-journal]
-       sudo: ["ALL=(ALL) ALL"]
+       sudo: ["ALL=(ALL) NOPASSWD:ALL"]
        shell: /bin/bash
 
 Enable sshd and cloud-init services.::
