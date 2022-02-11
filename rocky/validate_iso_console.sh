@@ -1,5 +1,5 @@
 #!/bin/bash
-ISO_PATH="/data/jijisa/images/pbos-8.5.iso"
+ISO_PATH="/data/jijisa/images/pbos-8.5-2202.iso"
 DISK_PATH="/data/jijisa/images/pbos.qcow2"
 DISK_SIZE=5
 DISK_FORMAT="qcow2"

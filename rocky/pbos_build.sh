@@ -1,12 +1,12 @@
 #!/bin/bash
-ISO_PATH="/data/jijisa/images/Rocky-8.5-x86_64-minimal.iso"
-DISK_PATH="/data/jijisa/images/rocky-8.5-x86_64-genericcloud.qcow2"
+ISO_PATH="/data/jijisa/images/pbos-8.5-2202.iso"
+DISK_PATH="/data/jijisa/images/pbos-8.5-x86_64-genericcloud.qcow2"
 DISK_SIZE=5
 DISK_FORMAT="qcow2"
 NET_BRIDGE="br1"
 
 virt-install \
-  --name rocky-linux-8 \
+  --name pbos-8 \
   --memory=1024 \
   --vcpus=1 \
   --os-type linux \

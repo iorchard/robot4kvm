@@ -1,13 +1,13 @@
-Create Rocky Linux 8 Cloud Image
+Create PBOS 8 Cloud Image
 ==================================
 
-This is a guide to create Rocky Linux 8 cloud image.
+This is a guide to create PBOS 8 cloud image.
 
-Download Rocky Linux 8.4 minimal iso.::
+Get pbos-8.5 iso.::
 
    $ mkdir /data/jijisa/images
    $ cd /data/jijisa/images
-   $ curl -sLO https://download.rockylinux.org/pub/rocky/8/isos/x86_64/Rocky-8.4-x86_64-minimal.iso
+   $ curl -sLO http://192.168.151.110:8000/pbos/pbos-8.5.iso
 
 Create root and clex sha512 hash password using the following command::
 
@@ -23,9 +23,9 @@ Edit ks.cfg to put root and user password.::
 
 Modify NET_BR in rocky_build.sh for your env.
 
-Run rocky_build.sh.::
+Run pbos_build.sh.::
 
-   $ bash rocky_build.sh
+   $ ./pbos_build.sh
 
 After installation is done, log in as a root::
 
