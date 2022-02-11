@@ -48,8 +48,7 @@ Log in again and install what you want.::
    # ip address add <ip>/<cidr> dev eth0
    # ip route add default via <router_ip>
    # echo "nameserver 8.8.8.8" > /etc/resolv.conf
-   # dnf -y install cloud-utils-growpart curl epel-release python3 bind-utils
-   # dnf -y install openssh-server cloud-init sshpass
+   # dnf -y install cloud-utils-growpart cloud-init
 
 Configure cloud-init and set clex as default login user::
 
@@ -85,7 +84,7 @@ Press CTRL+] to close VM console.
 
 Run virt-sysprep for the VM domain.::
 
-   # virt-sysprep -d rocky-linux-8
+   # virt-sysprep -d pbos-8
    [   0.0] Examining the guest ...
    [   5.4] Performing "abrt-data" ...
    [   5.4] Performing "backup-files" ...
@@ -127,11 +126,14 @@ Run virt-sysprep for the VM domain.::
 Trim the image.::
 
    $ cd /data/jijisa/images
-   $ mv rocky-8.4-x86_64-genericcloud.qcow2 \
-         rocky-8.4-x86_64-genericcloud.qcow2.new
-   $ qemu-img convert -O qcow2 rocky-8.4-x86_64-genericcloud.qcow2.new \
-                                 rocky-8.4-x86_64-genericcloud.qcow2
+   $ mv pbos-8.5-x86_64-genericcloud.qcow2 \
+         pbos-8.5-x86_64-genericcloud.qcow2.new
+   $ qemu-img convert -O qcow2 pbos-8.5-x86_64-genericcloud.qcow2.new \
+                                 pbos-8.5-x86_64-genericcloud.qcow2
 
 
-It shrank down from 5GiB to about 1.8GiB.
+It shrank down from 5GiB to about 1.5GiB.::
+
+   $ ls -hs pbos-8.5-x86_64-genericcloud.qcow2
+   1.5G pbos-8.5-x86_64-genericcloud.qcow2
 

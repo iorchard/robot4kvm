@@ -9,9 +9,9 @@ cdrom
 lang ko_KR.UTF-8
 keyboard us
 # network setting
-network --bootproto=static --ip=192.168.21.5 --netmask=255.255.255.0 --gateway=192.168.21.1 --nameserver=8.8.8.8 --noipv6 --onboot=on --device=eth0
 firewall --disabled
 selinux --disabled
+services --disabled=NetworkManager
 timezone Asia/Seoul
 bootloader --timeout=5 --location=mbr --append="net.ifnames=0 biosdevname=0"
 skipx
@@ -32,6 +32,8 @@ tar
 bzip2
 rsync
 network-scripts
+python3-cryptography
+sshpass
 -fprintd-pam
 -intltool
 -iwl*-firmware
@@ -42,10 +44,15 @@ network-scripts
 %end
 
 %post
+# enable network service and touch disable-deprecation-warnings
+chkconfig network on
+touch /etc/sysconfig/disable-deprecation-warnings
 # sudo
 echo 'Defaults:clex !requiretty' > /etc/sudoers.d/clex
-echo '%clex ALL=(ALL) ALL' >> /etc/sudoers.d/clex
+echo '%clex ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers.d/clex
 chmod 440 /etc/sudoers.d/clex
+# security settings
+sed -i 's/^#UseDNS no/UseDNS no/;s/^PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
 
 # Since we disable consistent network naming, we need to make sure the eth0
 # configuration file is in place so it will come up.
