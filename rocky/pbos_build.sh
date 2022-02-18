@@ -16,5 +16,5 @@ virt-install \
   --graphics=none \
   --os-variant=rhl8.0 \
   --console pty,target_type=serial \
-  --initrd-inject ks.cfg \
-  --extra-args "inst.ks=file:/ks.cfg console=tty0 console=ttyS0,115200n8"
+  --initrd-inject ks_pbos.cfg \
+  --extra-args "inst.ks=file:/ks_pbos.cfg inst.sshd console=tty0 console=ttyS0,115200n8"
