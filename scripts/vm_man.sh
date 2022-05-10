@@ -89,10 +89,12 @@ $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
     --install ${IPKGS} \
     --uninstall ${RPKGS} \
-    --upload /etc/hosts:/etc/hosts \
+    --upload data/hosts:/etc/hosts \
     --upload data/interfaces:/etc/network/interfaces \
     $(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d;done) \
     --upload data/grub:/etc/default/grub \
+    --firstboot-command "growpart /dev/sda 1" \
+    --firstboot-command "resize2fs /dev/sda1" \
     --run-command "update-grub" \
     --run-command "dpkg-reconfigure openssh-server" \
     --run-command "adduser --disabled-password --gecos '' ${USERID}" \

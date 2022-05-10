@@ -54,6 +54,7 @@ Set Up Lab
         ...    grep -q "${IPS['${vm}']['${REP_BR}']['ip']}.*${vm}" /etc/hosts
         Run Keyword If    ${rc} != 0        Run 
         ...        echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
+        Run     echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a data/hosts
     END
 
     FOR     ${vm}   IN  @{VMS}
