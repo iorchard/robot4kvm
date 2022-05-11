@@ -84,7 +84,7 @@ echo
 
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
-    --upload /etc/hosts:/etc/hosts \
+    --upload data/hosts:/etc/hosts \
     --write /etc/selinux/config:SELINUX=disabled\nSELINUXTYPE=targeted \
     $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
 	--run-command "adduser ${USERID}" \
