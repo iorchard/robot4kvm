@@ -48,6 +48,7 @@ Get And Verify Debian Image
 Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
+    Run     echo "127.0.0.1 localhost"|sudo tee data/hosts
     FOR     ${vm}   IN  @{VMS}
         Log        ${vm}: Add VM IP in /etc/hosts.    console=True
         ${rc} =        Run And Return Rc
