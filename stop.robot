@@ -6,18 +6,15 @@ Library         OperatingSystem
 Library         Process
 Variables       props.py
 
-*** Variables ***
-waittime    120
-
 *** Tasks ***
 Stop a Lab
     [Documentation]     Shutdown virtual machines for a lab.
     [Tags]    stop
     FOR     ${vm}   IN  @{VMS}
-        Log     Stop ${vm} and wait for at most ${waittime} seconds.
+        Log     Stop ${vm} and wait for at most 180 seconds.
         ...     console=True
         Run     virsh shutdown ${vm}
-        Wait Until Keyword Succeeds     ${waittime}s     5s
+        Wait Until Keyword Succeeds     180s     5s
         ...                             Check VM State  ${vm}
     END
 
