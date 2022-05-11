@@ -30,12 +30,14 @@ Get The Image
 Set Up Lab
     [Documentation]     Set up virtual machines.
     [Tags]    takeoff
+    Run     echo "127.0.0.1 localhost"|sudo tee data/hosts
     FOR     ${vm}   IN  @{VMS}
-        Log        ${vm}: Add VM IP in /etc/hosts.    console=True
+        Log        ${vm}: Add VM IP in data/hosts.    console=True
         ${rc} =        Run And Return Rc
         ...    grep -q "${IPS['${vm}']['${REP_BR}']['ip']}.*${vm}" /etc/hosts
         Run Keyword If    ${rc} != 0        Run 
         ...        echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a /etc/hosts
+        Run     echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a data/hosts
     END
 
     FOR     ${vm}   IN  @{VMS}
