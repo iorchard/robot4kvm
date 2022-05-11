@@ -95,6 +95,7 @@ $VIRTC -a ${IMGFILE} \
     --upload data/grub:/etc/default/grub \
     --firstboot-command "growpart /dev/sda 1" \
     --firstboot-command "resize2fs /dev/sda1" \
+    --run-command "sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/;' /etc/ssh/sshd_config" \
     --run-command "update-grub" \
     --run-command "dpkg-reconfigure openssh-server" \
     --run-command "adduser --disabled-password --gecos '' ${USERID}" \
