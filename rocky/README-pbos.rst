@@ -21,7 +21,7 @@ Edit ks.cfg to put root and user password.::
    rootpw --iscrypted <sha512_root_password>
    user --name=clex --iscrypted --password <sha512_user_password>
 
-Modify NET_BR in rocky_build.sh for your env.
+Modify NET_BR in pbos_build.sh for your env.
 
 Run pbos_build.sh.::
 
