@@ -122,15 +122,12 @@ Run virt-sysprep for the VM domain.::
 Trim the image.::
 
    $ cd /data/jijisa/images
-   $ mv Burrito-GenericCloud-8.7-202301091720-x86_64.qcow2 \
-      Burrito-GenericCloud-8.7-202301091720-x86_64.qcow2.new
-   $ qemu-img convert -O qcow2 \
-      Burrito-GenericCloud-8.7-202301091720-x86_64.qcow2.new \
-      Burrito-GenericCloud-8.7-202301091720-x86_64.qcow2
+   $  virt-sparsify \
+      Burrito-GenericCloud-<ver>_<os_ver>-<timestamp>-x86_64.qcow2 \
+      Burrito-GenericCloud-<ver>_<os_ver>-x86_64.qcow2
 
 It shrank down from 5GiB to about 1.7GiB.::
 
-   $ ls -hs Burrito-GenericCloud-8.7-202301091720-x86_64.qcow2
-   1.7G Burrito-GenericCloud-8.7-202301091720-x86_64.qcow2
-
+   $ ls -hs Burrito-GenericCloud-1.1.2_8.7-x86_64.qcow2
+   1.1G Burrito-GenericCloud-1.1.2_8.7-x86_64.qcow2
 
