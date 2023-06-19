@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+import os
+
+# user account in VM.
+USERID = 'orchard'
+
+PREFIX = 'jijisa-vagrant'
+# VM location and size.
+SRC_DIR = '/data/' + os.environ.get('USER') + '/images'
+DST_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
+
+# machine list.
+VMS = [
+        PREFIX
+]
+
+# machine role list.
+ROLES = {
+        PREFIX: ['control'],
+}
+CORES = {
+        PREFIX: 8,
+}
+MEM = {
+        PREFIX: 16,
+}
+DISK = {
+        PREFIX: 100,
+}
+# For VM with storage role
+OSD_NUM = 3     # The number of osd disks for VM with storage role
+OSD_SIZE = 100   # OSD disk size in GiB.
+# machine IP list.
+NET = {
+        'ext': '10.20.0',
+        'mgmt': '192.168.21',
+        'provider': '192.168.22',
+        'overlay':   '192.168.23',
+        'storage': '192.168.24',
+}
+IP = 75  # The last octet of the IP address to begin.
+REP_BR = 'mgmt'  # Select this bridge's ip to insert into /etc/hosts
+IPS = {
+    PREFIX: {
+        'external': {
+            'ip': NET['ext'] + '.' + str(IP),
+            'nm': 24,
+            'gw': NET['ext'] + '.' + '11',
+        },
+        'mgmt': {
+            'ip': NET['mgmt'] + '.' + str(IP),
+            'nm': 24,
+        },
+        'provider': {
+            'ip': '',
+        },
+        'overlay': {
+            'ip': NET['overlay'] + '.' + str(IP),
+            'nm': 24,
+        },
+        'storage': {
+            'ip': NET['storage'] + '.' + str(IP),
+            'nm': 24,
+        },
+    },
+}
+
+# which OS you choose. DEB or CENTOS?
+OS = 'DEB'
+
+# Do not edit below this line!!!
+# debian openstack image 
+# disk total size: 2G
+# Login account: debian
+DEB_IMG_URL = 'https://cloud.debian.org/images/cloud/bookworm/latest'
+DEB_VER = 12
+if DEB_VER < 12:
+    VM_MAN = 'scripts/vm_man.sh'
+else:
+    VM_MAN = 'scripts/vm_man4bookworm.sh'
+
+DEB_ARCH = 'amd64'
+DEB_IMG = 'debian-{}-genericcloud-{}.qcow2'.format(DEB_VER, DEB_ARCH)
+DEB_UID = 'debian'
+DEB_KEYSERVER = 'keyring.debian.org'
+# Find out keyid using 'gpg --verify SHA256SUMS.sign' output.
+# And Run gpg --keyserver ${DEB_KEYSERVER} --recv <keyid>
+DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B'
+# centos openstack image 
+# disk total size: 8G
+# Login account: centos
+CENTOS_VER = '7'
+CENTOS_IMG_URL = 'http://cloud.centos.org/centos/{}/images'.format(CENTOS_VER)
+CENTOS_ARCH = 'x86_64'
+CENTOS_IMG = 'CentOS-{}-{}-GenericCloud.qcow2'.format(CENTOS_VER, CENTOS_ARCH)
+CENTOS_UID = 'centos'
+
+IMG_URL = eval('{}_IMG_URL'.format(OS))
+VER = eval('{}_VER'.format(OS))
+ARCH = eval('{}_ARCH'.format(OS))
+IMG = eval('{}_IMG'.format(OS))
+UID = eval('{}_UID'.format(OS))
+
+SSHKEY = os.environ.get('HOME') + '/.ssh/id_rsa'
+
+print(OS, IMG_URL, IMG, VM_MAN)

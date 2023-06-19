@@ -7,43 +7,30 @@ Library         Process
 Variables       props.py
 
 *** Variables ***
-${VM_MAN}       ${CURDIR}/scripts/vm_man.sh
+#${VM_MAN}       ${CURDIR}/scripts/vm_man.sh
 ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 @{LETTERS}      a   b   c   d   e   f   g   h
 
 *** Tasks ***
 Get And Verify Debian Image
-    [Documentation]     Get debian openstack image.
+    [Documentation]     Get debian genericcloud image.
     [Tags]  preflight
     Log     Get debian image from ${IMG_URL}/${IMG}   console=True
     ${rc} =   Run Keyword If  os.path.exists("${SRC_DIR}/${IMG}") == False
     ...     Run And Return Rc
     ...     curl -sLo ${SRC_DIR}/${IMG} ${IMG_URL}/${IMG}
 
-#    Log     Get SHA256 checksum of the image ${IMG}.   console=True
-#    ${rc} =     Run And Return Rc
-#    ...     curl -sLo ${SRC_DIR}/SHA256SUMS ${IMG_URL}/SHA256SUMS
-#    Should Be Equal As Integers     ${rc}   0
-#    ...     msg="Fail to get SHA256SUMS."
+    Log     Get SHA512 checksum of the image ${IMG}.   console=True
+    ${rc} =   Run Keyword If  os.path.exists("${SRC_DIR}/SHA512SUMS") == False
+    ...     Run And Return Rc
+    ...     curl -sLo ${SRC_DIR}/SHA512SUMS ${IMG_URL}/SHA512SUMS
 
-## Currently there is no sign file in buster/bullseye url. So skip it.
-#    ${rc} =     Run And Return Rc
-#    ...     curl -sLo ${SRC_DIR}/SHA256SUMS.sign ${IMG_URL}/SHA256SUMS.sign
-#    Should Be Equal As Integers     ${rc}   0
-#    ...     msg="Fail to get SHA256SUMS.sign."
-#
-#    Log     gpg --verify ${SRC_DIR}/SHA256SUMS.sign ${SRC_DIR}/SHA256SUMS   console=True
-#    ${rc} =     Run And Return Rc
-#    ...     gpg --verify ${SRC_DIR}/SHA256SUMS.sign ${SRC_DIR}/SHA256SUMS
-#    Should Be Equal As Integers     ${rc}   0
-#    ...     msg="Fail to verify GPG SHA256SUMS."
-
-#    Log     Verify debian image with SHA checksum.   console=True
-#    ${result} =     Run Process
-#    ...     grep ${IMG}\$ SHA256SUMS|sha256sum --check --quiet -
-#    ...     shell=yes   cwd=${SRC_DIR}
-#    Should Be Equal As Integers     ${result.rc}   0
-#    ...     msg="Fail to verify SHA checksum for ${IMG}."
+    Log     Verify debian image with SHA512 checksum.   console=True
+    ${result} =     Run Process
+    ...     grep ${IMG}\$ SHA512SUMS|sha512sum --check --quiet -
+    ...     shell=yes   cwd=${SRC_DIR}
+    Should Be Equal As Integers     ${result.rc}   0
+    ...     msg="Fail to verify SHA512 checksum for ${IMG}."
 
 Set Up Lab
     [Documentation]     Set up virtual machines.
@@ -90,7 +77,8 @@ Set Up Lab
         Create Disk     ${vm}
 
         Log     Create interfaces to ${vm}  console=True
-        Create Interfaces       ${vm}   ${IPS}[${vm}]
+
+        ${rc} =   Run Keyword If  ${DEB_VER} < 12	Create Interfaces  ${vm}  ${IPS}[${vm}]	 ELSE	Create Bookworm Interfaces	${vm}	${IPS}[${vm}]
 
         Log     Run ${VM_MAN}     console=True
         ${rc}   ${out} =     Run And Return Rc And Output
@@ -111,11 +99,6 @@ Start Lab
 *** Keywords ***
 Preflight
     Comment     Run before Tasks.
-    Log     Set up GPG keyring      console=True
-    ${rc} =     Run And Return Rc
-    ...     gpg --list-keys ${DEB_KEYID} || gpg --keyserver ${DEB_KEYSERVER} --recv-keys ${DEB_KEYID}
-    Should Be Equal As Integers     ${rc}   0
-
     Log     Check directories       console=True
     ${rc} =        Run And Return Rc    ls -ld ${SRC_DIR}
     Run Keyword If        ${rc} != 0        Create Directory    ${SRC_DIR}
@@ -159,6 +142,32 @@ Create OSD Disks
         ...     qemu-img create -f qcow2 ${OSD_DIR}/${vm}-${drv}.qcow2 ${OSD_SIZE}G
         Should Be Equal As Integers     ${rc}   0
         Run     virsh attach-disk ${vm} ${OSD_DIR}/${vm}-${drv}.qcow2 sd${LETTERS}[${drv}] --driver qemu --subdriver qcow2 --targetbus scsi --persistent
+    END
+
+Create Bookworm Interfaces
+    [Documentation]     Create Interfaces for Debian Bookworm.
+    [Arguments]     ${vm}   ${ifaces}
+    ${i} =      Set Variable    0
+    Remove File     ${TEMPDIR}/eth*
+    FOR     ${br}   IN      @{ifaces}
+        Log     ${vm}:${br}:${ifaces['${br}']}      console=True
+        ${netinfo} =    Set Variable    ${ifaces['${br}']}
+
+        ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
+        Should Be Equal As Integers     ${rc}   0
+
+        Run     virsh attach-interface --domain ${vm} --type bridge --source ${br} --model virtio --mac ${mac} --persistent
+
+        Run Keyword If    "${netinfo['ip']}" == ""
+        ...         Create File        ${TEMPDIR}/eth${i}
+        ...         [Match]\nName=eth${i}\n\n[Network]\n
+        ...     ELSE IF        'gw' in ${netinfo}
+        ...         Create File        ${TEMPDIR}/eth${i}
+        ...         [Match]\nName=eth${i}\n\n[Network]\nAddress=${netinfo['ip']}/${netinfo['nm']}\nGateway=${netinfo['gw']}\nDNS=8.8.8.8\n
+        ...     ELSE
+        ...         Create File        ${TEMPDIR}/eth${i}
+        ...         [Match]\nName=eth${i}\n\n[Network]\nAddress=${netinfo['ip']}/${netinfo['nm']}\n
+        ${i} =      Evaluate    ${i} + 1
     END
 
 Create Interfaces
