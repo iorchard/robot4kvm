@@ -12,31 +12,31 @@ OSD_DIR = '/data/' + os.environ.get('USER') + '/' + PREFIX + 'lab'
 
 # machine list.
 VMS = [
-        PREFIX + '0',
         PREFIX + '1',
         PREFIX + '2',
+        PREFIX + '3',
 ]
 
 # machine role list.
 ROLES = {
-        PREFIX + '0': ['storage'],
         PREFIX + '1': ['storage'],
         PREFIX + '2': ['storage'],
+        PREFIX + '3': ['storage'],
 }
 CORES = {
-        PREFIX + '0': 8,
         PREFIX + '1': 8,
         PREFIX + '2': 8,
+        PREFIX + '3': 8,
 }
 MEM = {
-        PREFIX + '0': 16,
         PREFIX + '1': 16,
         PREFIX + '2': 16,
+        PREFIX + '3': 16,
 }
 DISK = {
-        PREFIX + '0': 50,
         PREFIX + '1': 50,
         PREFIX + '2': 50,
+        PREFIX + '3': 50,
 }
 # For VM with storage role
 OSD_NUM = 3     # The number of osd disks for VM with storage role
@@ -52,7 +52,7 @@ NET = {
 IP = 71  # The last octet of the IP address to begin.
 REP_BR = 'mgmt'  # Select this bridge's ip to insert into /etc/hosts
 IPS = {
-    PREFIX + '0': {
+    PREFIX + '1': {
         'external': {
             'ip': NET['ext'] + '.' + str(IP),
             'nm': 24,
@@ -61,7 +61,6 @@ IPS = {
         'mgmt': {
             'ip': NET['mgmt'] + '.' + str(IP),
             'nm': 24,
-            'gw': NET['mgmt'] + '.' + '11',
         },
         'provider': {
             'ip': '',
@@ -75,7 +74,7 @@ IPS = {
             'nm': 24,
         },
     },
-    PREFIX + '1': {
+    PREFIX + '2': {
         'external': {
             'ip': NET['ext'] + '.' + str(IP+1),
             'nm': 24,
@@ -84,7 +83,6 @@ IPS = {
         'mgmt': {
             'ip': NET['mgmt'] + '.' + str(IP+1),
             'nm': 24,
-            'gw': NET['mgmt'] + '.' + '11',
         },
         'provider': {
             'ip': '',
@@ -98,7 +96,7 @@ IPS = {
             'nm': 24,
         },
     },
-    PREFIX + '2': {
+    PREFIX + '3': {
         'external': {
             'ip': NET['ext'] + '.' + str(IP+2),
             'nm': 24,
@@ -107,7 +105,6 @@ IPS = {
         'mgmt': {
             'ip': NET['mgmt'] + '.' + str(IP+2),
             'nm': 24,
-            'gw': NET['mgmt'] + '.' + '11',
         },
         'provider': {
             'ip': '',
@@ -130,16 +127,15 @@ OS = 'DEB'
 # debian openstack image 
 # disk total size: 2G
 # Login account: debian
-DEB_IMG_URL = 'http://cdimage.debian.org/cdimage/openstack/current-10'
-DEB_VER = '11'
+DEB_IMG_URL = 'https://cloud.debian.org/images/cloud/bookworm/latest'
+DEB_VER = '12'
 DEB_ARCH = 'amd64'
-DEB_IMG = 'debian-{}-openstack-{}.qcow2'.format(DEB_VER, DEB_ARCH)
-#DEB_IMG = 'debian-{}-genericcloud-{}.qcow2'.format(DEB_VER, DEB_ARCH)
+DEB_IMG = 'debian-{}-genericcloud-{}.qcow2'.format(DEB_VER, DEB_ARCH)
 DEB_UID = 'debian'
 DEB_KEYSERVER = 'keyring.debian.org'
 # Find out keyid using 'gpg --verify SHA256SUMS.sign' output.
 # And Run gpg --keyserver ${DEB_KEYSERVER} --recv <keyid>
-DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B' # debian buster key
+DEB_KEYID = 'DF9B9C49EAA9298432589D76DA87E80D6294BE9B'
 # centos openstack image 
 # disk total size: 8G
 # Login account: centos
