@@ -7,7 +7,7 @@ Library         Process
 Variables       props.py
 
 *** Variables ***
-#${VM_MAN}       ${CURDIR}/scripts/vm_man.sh
+${VM_MAN}       ${CURDIR}/scripts/vm_man.sh
 ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 @{LETTERS}      a   b   c   d   e   f   g   h
 

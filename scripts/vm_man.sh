@@ -82,16 +82,15 @@ then
 fi
 echo
 
-#    --update \
-#    --run-command "echo '${USERID} ALL=(ALL:ALL) ALL' > /etc/sudoers.d/99-${USERID}" \
-#    --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
+    --update \
     --install ${IPKGS} \
     --uninstall ${RPKGS} \
+	--mkdir /etc/network/interfaces.d \
     --upload data/hosts:/etc/hosts \
     --upload data/interfaces:/etc/network/interfaces \
-    $(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d;done) \
+	$(for i in /tmp/eth*;do echo --upload $i:/etc/network/interfaces.d/$(basename $i);done) \
     --upload data/grub:/etc/default/grub \
     --firstboot-command "growpart /dev/sda 1" \
     --firstboot-command "resize2fs /dev/sda1" \
@@ -100,6 +99,8 @@ $VIRTC -a ${IMGFILE} \
     --run-command "dpkg-reconfigure openssh-server" \
     --run-command "adduser --disabled-password --gecos '' ${USERID}" \
     --run-command "gpasswd -a ${USERID} sudo" \
+    --run-command "echo '${USERID} ALL=(ALL:ALL) ALL' > /etc/sudoers.d/99-${USERID}" \
+    --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
     --password ${USERID}:password:${USERPW} \
     --ssh-inject ${USERID} \
     --timezone "${TIMEZONE}" \
