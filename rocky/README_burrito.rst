@@ -21,7 +21,7 @@ Modify NET_BR in burrito_build.sh for your env.
 
 Run burrito_build.sh.::
 
-   $ ./burrito_build.sh
+   $ ./burrito_build.sh <burrito_version> <rockylinux_version>
 
 After installation is done, log in as a root::
 
@@ -76,11 +76,9 @@ Exit the console.::
    # rm -f cleanup.sh
    # cat /dev/null > ~/.bash_history && history -c && shutdown -h now
 
-Press CTRL+] to close VM console.
-
 Run virt-sysprep for the VM domain.::
 
-   # virt-sysprep -d burrito-8
+   $ virt-sysprep -d burrito-8
    [   0.0] Examining the guest ...
    [   5.4] Performing "abrt-data" ...
    [   5.4] Performing "backup-files" ...
