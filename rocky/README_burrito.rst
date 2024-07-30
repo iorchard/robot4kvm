@@ -12,7 +12,7 @@ Create root and clex sha512 hash password using the following command::
    $ python3 -c 'import crypt,getpass;pw=getpass.getpass();print(crypt.crypt(pw) if (pw==getpass.getpass("Confirm: ")) else exit())'
 
 
-Edit ks.cfg to put root and user password.::
+Edit ks_burrito.cfg to put root and user password.::
 
    rootpw --iscrypted <sha512_root_password>
    user --name=clex --iscrypted --password <sha512_user_password>
@@ -22,59 +22,6 @@ Modify NET_BR in burrito_build.sh for your env.
 Run burrito_build.sh.::
 
    $ ./burrito_build.sh <burrito_version> <rockylinux_version>
-
-After installation is done, log in as a root::
-
-   localhost login: root
-   Password: <root-password-in-kickstart>
-
-Set up network for your envionment.::
-
-   # ip address add <ip>/<cidr> dev eth0
-   # ip route add default via <router_ip>
-   # echo "nameserver 8.8.8.8" > /etc/resolv.conf
-
-upgrade packages and reboot.::
-
-   # dnf -y update
-   # reboot
-
-Log in again and install what you want.::
-
-   # ip address add <ip>/<cidr> dev eth0
-   # ip route add default via <router_ip>
-   # echo "nameserver 8.8.8.8" > /etc/resolv.conf
-   # dnf -y install cloud-utils-growpart cloud-init
-
-Configure cloud-init and set clex as default login user::
-
-   # vi /etc/cloud/cloud.cfg
-   ...
-   ssh_pwauth: 1
-   ...
-   system_info:
-     default_user:
-       name: clex
-       lock_passwd: false
-       gecos: SKB CloudX User
-       groups: [adm, systemd-journal]
-       sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-       shell: /bin/bash
-
-Enable sshd and cloud-init services.::
-
-   # systemctl enable cloud-init sshd
-
-Run cleanup.sh inside the VM.::
-
-   # vi cleanup.sh  # copy text from cleanup.sh
-   # chmod +x cleanup.sh
-   # ./cleanup.sh
-
-Exit the console.::
-
-   # rm -f cleanup.sh
-   # cat /dev/null > ~/.bash_history && history -c && shutdown -h now
 
 Run virt-sysprep for the VM domain.::
 
@@ -122,10 +69,5 @@ Trim the image.::
    $ cd /data/jijisa/images
    $  virt-sparsify \
       Burrito-GenericCloud-<ver>_<os_ver>-<timestamp>-x86_64.qcow2 \
-      Burrito-GenericCloud-<ver>_<os_ver>-x86_64.qcow2
-
-It shrank down from 5GiB to about 1.7GiB.::
-
-   $ ls -hs Burrito-GenericCloud-1.1.2_8.7-x86_64.qcow2
-   1.1G Burrito-GenericCloud-1.1.2_8.7-x86_64.qcow2
+      Burrito-GenericCloud-<os_ver>-x86_64.qcow2
 

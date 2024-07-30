@@ -14,35 +14,60 @@ selinux --disabled
 timezone Asia/Seoul --isUtc --nontp
 bootloader --timeout=5 --location=mbr --append="net.ifnames=0 biosdevname=0"
 skipx
-zerombr
 # Partition scheme split into 2 mode - legacy BIOS vs. UEFI
-clearpart --all --initlabel
-ignoredisk --only-use=sda
-%include /tmp/uefi
-%include /tmp/legacy
-%pre --logfile /tmp/kickstart.install.pre.log
+%include /tmp/partition-scheme
+%pre --logfile /tmp/ks-pre.log
+# Select OS disk
+# Should not be removable
+# is not less than $MINSIZE GB
+# is not more than $MAXSIZE GB
+BLOCKDIR="/sys/block"
+MINSIZE=1
+MAXSIZE=1100
+ROOTDRIVE=""
+for d in $BLOCKDIR/sd* $BLOCKDIR/nvme*; do
+  DEV=$(basename "$d")
+  if [ -d $BLOCKDIR/$DEV ]; then
+    if [[ "`cat $BLOCKDIR/$DEV/removable`" = "0" ]]; then
+      GB=$((`cat $BLOCKDIR/$DEV/size`/2**21))
+      echo "Block device $DEV has $GB GB."
+      if [ $GB -gt $MINSIZE -a $GB -lt $MAXSIZE ]; then
+        ROOTDRIVE=$DEV
+        echo "Selected ROOTDRIVE=$ROOTDRIVE"
+        break
+      fi
+    fi
+  fi
+done
+
+if [ -z "$ROOTDRIVE" ]; then
+  echo "ERROR: ROOTDRIVE is not defined."
+else
+  echo "ROOTDRIVE=$ROOTDRIVE"
+  cat > /tmp/partition-scheme <<END
+zerombr
+clearpart --drives=$ROOTDRIVE --all --initlabel
+ignoredisk --only-use=$ROOTDRIVE
+END
+fi
+
 if [ -d /sys/firmware/efi ]; then
-  cat > /tmp/uefi <<END
+  cat >> /tmp/partition-scheme <<END
 part /boot --fstype xfs --size 1024
 part /boot/efi --fstype efi --size 500
 part / --fstype xfs --size 1 --grow
 END
 else
-  cat > /tmp/legacy <<END
+  cat >> /tmp/partition-scheme <<END
 part / --fstype xfs --size 1 --grow
 END
 fi
-if [ -d /sys/firmware/efi ]; then
-  touch /tmp/legacy
-else
-  touch /tmp/uefi
-fi
 %end
+
 firstboot --disabled
-reboot --eject
+poweroff
 rootpw --iscrypted <sha512_root_password>
 user --name=clex --iscrypted --password <sha512_user_password>
-
 %packages --instLangs=en_US.utf8
 openssh-clients
 sudo
@@ -59,6 +84,8 @@ lsof
 wget
 jq
 patch
+gnutls-utils
+cloud-utils-growpart
 %end
 
 %post
