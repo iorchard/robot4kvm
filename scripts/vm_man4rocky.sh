@@ -76,10 +76,10 @@ TIMEZONE="Asia/Seoul"
 #    --firstboot-command "dnf -y install sshpass" \
 #    --install ${IPKGS} \
 #    --update \
-#    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
     --upload data/hosts:/etc/hosts \
     $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
 	--ssh-inject ${USERID} \
-    --firstboot-command "cat </dev/null >/etc/machine-id && systemd-machine-id-setup"
+    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
+    --firstboot-command "cat </dev/null >/etc/machine-id && systemd-machine-id-setup" 
