@@ -45,22 +45,25 @@ Set Up Lab
         Run     echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a data/hosts
     END
 
+	Log		Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/base.qcow2		console=True
+	Copy File	${SRC_DIR}/${IMG}   ${DST_DIR}/base.qcow2
+
     FOR     ${vm}   IN  @{VMS}
-        Log     Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/${vm}.qcow2     
+        Log     Create ${DST_DIR}/${vm}.qcow2 based on ${DST_DIR}/base.qcow2
         ...     console=True
-        Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
+		${rc} =		Run And Return Rc
+		...		qemu-img create -f qcow2 -b ${DST_DIR}/base.qcow2 ${DST_DIR}/${vm}.qcow2
+        Should Be Equal As Integers     ${rc}   0
 
         Log        Resize the image to ${DISK}[${vm}]G.    console=True
         ${rc} =     Run And Return Rc
         ...     qemu-img resize ${DST_DIR}/${vm}.qcow2 ${DISK}[${vm}]G
         Should Be Equal As Integers     ${rc}   0
 
-# No need to use virt-resize since bullseye.
-# systemd-growfs takes care of resizing when booting
-#        Log        Resize root partition to 100%.        console=True
-#        ${rc} =     Run And Return Rc
-#        ...     virt-resize --expand /dev/sda1 ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
-#        Should Be Equal As Integers     ${rc}   0
+        Log        Resize root partition to 100%.        console=True
+        ${rc} =     Run And Return Rc
+        ...     virt-resize --expand /dev/sda1 ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
+        Should Be Equal As Integers     ${rc}   0
 
         ${rc}   ${uuid} =   Run And Return Rc And Output
         ...     cat /proc/sys/kernel/random/uuid
@@ -77,7 +80,6 @@ Set Up Lab
         Create Disk     ${vm}
 
         Log     Create interfaces to ${vm}  console=True
-
         ${rc} =   Run Keyword If  ${DEB_VER} < 12	Create Interfaces  ${vm}  ${IPS}[${vm}]	 ELSE	Create Bookworm Interfaces	${vm}	${IPS}[${vm}]
 
         Log     Run ${VM_MAN}     console=True
@@ -85,6 +87,10 @@ Set Up Lab
         ...     ${VM_MAN} -f ${DST_DIR}/${vm}.qcow2 -u ${USERID}
         Should Be Equal As Integers     ${rc}   0   
         ...     msg="vm_man failed: ${out}"
+
+        Log     Create OSD disks for ${vm}       console=True
+        Run Keyword If  'storage' in ${ROLES}[${vm}]
+        ...        Create OSD Disks    ${vm}
     END
 
 Start Lab
@@ -128,9 +134,6 @@ Create XML
 Create Disk
     [Arguments]     ${vm}
     Run     virsh attach-disk ${vm} ${DST_DIR}/${vm}.qcow2 sda --driver qemu --subdriver qcow2 --targetbus scsi --persistent 
-
-    Run Keyword If  'storage' in ${ROLES}[${vm}]
-    ...        Create OSD Disks    ${vm}
 
 Create OSD Disks
     [Documentation]     Create OSD disks.
