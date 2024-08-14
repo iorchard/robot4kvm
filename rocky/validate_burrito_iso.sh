@@ -1,19 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
-VMNAME="burrito-validate"
-
-#BOOT_OPT=${1:-legacy}
 BOOT_OPT=${1:-}
 if [ "x$BOOT_OPT" != "xlegacy" ] && [ "x$BOOT_OPT" != "xuefi" ]; then
   echo "Usage) $0 legacy|uefi"
   echo "Abort: Unknown boot option $BOOT_OPT. It should be 'legacy' or 'uefi'."
   exit 1
 fi
+
+VMNAME="burrito-validate-${BOOT_OPT}"
 [ "x$BOOT_OPT" = "xuefi" ] && BOOT="--boot uefi" || BOOT=""
-ISO_PATH="/data/jijisa/images/burrito-8.7.iso"
-DISK_PATH="/data/jijisa/images/${VMNAME}-${BOOT_OPT}.qcow2"
-DISK_SIZE=5
+ISO_PATH="/data/jijisa/images/burrito-2.1.0_8.10.iso"
+DISK_PATH="/data/jijisa/images/${VMNAME}.qcow2"
+DISK_SIZE=50
 DISK_FORMAT="qcow2"
 NET_BRIDGE="br1"
 
