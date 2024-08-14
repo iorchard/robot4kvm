@@ -26,10 +26,15 @@ Set Up Lab
         Run     echo "${IPS['${vm}']['${REP_BR}']['ip']} ${vm} # ${OS}"|sudo tee -a data/hosts
     END
 
+    Log     Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/base.qcow2     console=True
+    Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/base.qcow2
+
     FOR     ${vm}   IN  @{VMS}
-        Log     Copy ${SRC_DIR}/${IMG} to ${DST_DIR}/${vm}.qcow2     
+        Log     Create ${DST_DIR}/${vm}.qcow2 based on ${DST_DIR}/base.qcow2
         ...     console=True
-        Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/${vm}.qcow2
+        ${rc} =     Run And Return Rc
+        ...     qemu-img create -f qcow2 -b ${DST_DIR}/base.qcow2 ${DST_DIR}/${vm}.qcow2
+        Should Be Equal As Integers     ${rc}   0
 
         Log        Resize the image to ${DISK}[${vm}]G.    console=True
         ${rc} =     Run And Return Rc
