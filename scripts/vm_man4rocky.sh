@@ -76,6 +76,11 @@ TIMEZONE="Asia/Seoul"
 #    --firstboot-command "dnf -y install sshpass" \
 #    --install ${IPKGS} \
 #    --update \
+#    --run-command "adduser ${USERID}" \
+#    --run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \
+#    --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
+#    --password ${USERID}:password:${USERPW} \
+
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
     --upload data/hosts:/etc/hosts \
