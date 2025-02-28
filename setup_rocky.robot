@@ -33,7 +33,7 @@ Set Up Lab
         Log     Create ${DST_DIR}/${vm}.qcow2 based on ${DST_DIR}/base.qcow2
         ...     console=True
         ${rc} =     Run And Return Rc
-        ...     qemu-img create -f qcow2 -b ${DST_DIR}/base.qcow2 ${DST_DIR}/${vm}.qcow2
+        ...     qemu-img create -f qcow2 -F qcow2 -b ${DST_DIR}/base.qcow2 ${DST_DIR}/${vm}.qcow2
         Should Be Equal As Integers     ${rc}   0
 
         Log        Resize the image to ${DISK}[${vm}]G.    console=True
@@ -144,12 +144,12 @@ Create Interfaces
 
         Run Keyword If    "${netinfo['ip']}" == ""
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         DEVICE=eth${i}\nHWADDR=${mac}\nONBOOT=yes
+        ...         DEVICE=eth${i}\nHWADDR=${mac}\nIPV6_DISABLED=yes\nONBOOT=yes
         ...     ELSE IF     'gw' in ${netinfo}
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         DEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nNETMASK=${netinfo['nm']}\nONBOOT=yes
+        ...         DEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
         ...     ELSE
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         DEVICE=eth${i}\nHWADDR=${mac}\nIPADDR=${netinfo['ip']}\nNETMASK=${netinfo['nm']}\nONBOOT=yes
+        ...         DEVICE=eth${i}\nHWADDR=${mac}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
         ${i} =        Evaluate    ${i} + 1
     END
