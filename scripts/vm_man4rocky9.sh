@@ -72,19 +72,12 @@ DNSSERVER="8.8.8.8"
 TIMEZONE="Asia/Seoul"
 # Do not edit below!!!
 
-#    --uninstall ${RPKGS} \
-#    --firstboot-command "dnf -y install sshpass" \
-#    --install ${IPKGS} \
-#    --update \
-#    --run-command "adduser ${USERID}" \
-#    --run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-${USERID}" \
-#    --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
-#    --password ${USERID}:password:${USERPW} \
-
-$VIRTC -v -x -a ${IMGFILE} \
+$VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
     --upload data/hosts:/etc/hosts \
-    $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
-	--ssh-inject ${USERID} \
+    $(for i in $(ls /tmp/eth*.nmconnection);do echo --upload $i:/etc/NetworkManager/system-connections/;done) \
+    --run-command "chown root:root /etc/NetworkManager/system-connections/*" \
+    --run-command "chmod 0600 /etc/NetworkManager/system-connections/*" \
+    --ssh-inject ${USERID} \
     --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
-    --firstboot-command "cat </dev/null >/etc/machine-id && systemd-machine-id-setup" &> output/virt-customize_${HOSTN}.log 
+    --firstboot-command "cat </dev/null >/etc/machine-id && systemd-machine-id-setup" &> output/virt-customize-${HOSTN}.log
