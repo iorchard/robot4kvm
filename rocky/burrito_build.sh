@@ -1,6 +1,6 @@
 #!/bin/bash
-VER=${1:-2.0.9}
-OS_VER=${2:-8.9}
+VER=${1:-2.1.5}
+OS_VER=${2:-8.10}
 ISO_PATH="/data/jijisa/images/burrito-${VER}_${OS_VER}.iso"
 DISK_PATH="/data/jijisa/images/Burrito-GenericCloud-${VER}_${OS_VER}-$(date +%Y%m%d%H%M)-x86_64.qcow2"
 DISK_SIZE=5
@@ -19,7 +19,6 @@ virt-install \
   --name $VMNAME \
   --memory=1024 \
   --vcpus=1 \
-  --os-type linux \
   --location ${ISO_PATH} \
   --disk path=${DISK_PATH},size=${DISK_SIZE},format=${DISK_FORMAT}  \
   --network bridge=${NET_BRIDGE} \
