@@ -4,6 +4,7 @@ Suite Setup      Preflight
 #Suite Teardown   Cleanup
 Library         OperatingSystem
 Library         Process
+Library         String
 Variables       props.py
 
 *** Variables ***
@@ -30,6 +31,12 @@ Set Up Lab
     Copy File   ${SRC_DIR}/${IMG}   ${DST_DIR}/base.qcow2
 
     FOR     ${vm}   IN  @{VMS}
+        ${vm_exists} =    Check If VM Exists    ${vm}
+        IF    ${vm_exists}
+          Log    VM ${vm} exists so skip creating it.    console=True
+          CONTINUE
+        END
+
         Log     Create ${DST_DIR}/${vm}.qcow2 based on ${DST_DIR}/base.qcow2
         ...     console=True
         ${rc} =     Run And Return Rc
@@ -75,21 +82,20 @@ Start Lab
     [Tags]    flying
     Log     \n      console=True
     FOR     ${vm}   IN  @{VMS}
-        Log     Start ${vm}     console=True
-        ${rc} =     Run And Return Rc     virsh start ${vm}
-        Should Be Equal As Integers     ${rc}   0
+        ${vm_state} =    Check VM State    ${vm}
+        IF    "${vm_state}" == "shut off"
+            Log     Start ${vm}     console=True
+            ${rc} =     Run And Return Rc     virsh start ${vm}
+            Should Be Equal As Integers     ${rc}   0
+        END
     END
 
 *** Keywords ***
 Preflight
     Comment     Run before Tasks.
-    Log     Set up GPG keyring      console=True
-    ${rc} =        Run And Return Rc    ls -ld ${SRC_DIR}
-    Run Keyword If        ${rc} != 0        Create Directory    ${SRC_DIR}
-    ${rc} =        Run And Return Rc    ls -ld ${DST_DIR}
-    Run Keyword If        ${rc} != 0        Create Directory    ${DST_DIR}
-    ${rc} =        Run And Return Rc    ls -ld ${OSD_DIR}
-    Run Keyword If        ${rc} != 0        Create Directory    ${OSD_DIR}
+    Create Directory    ${SRC_DIR}
+    Create Directory    ${DST_DIR}
+    Create Directory    ${OSD_DIR}
 
     Log        Create ${SSHKEY} if not exists        console=True
     ${rc} =        Run And Return Rc    ls ${SSHKEY}
@@ -144,12 +150,27 @@ Create Interfaces
 
         Run Keyword If    "${netinfo['ip']}" == ""
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         DEVICE=eth${i}\nHWADDR=${mac}\nIPV6_DISABLED=yes\nONBOOT=yes
+        ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nIPV6_DISABLED=yes\nONBOOT=yes
         ...     ELSE IF     'gw' in ${netinfo}
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         DEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
+        ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
         ...     ELSE
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         DEVICE=eth${i}\nHWADDR=${mac}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
+        ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
         ${i} =        Evaluate    ${i} + 1
     END
+
+Check If VM Exists
+    [Documentation]        Create Interfaces
+    [Arguments]        ${vm}
+    Log  Skip VM provision if ${DST_DIR}/${vm}.qcow2 exists  console=True
+    ${vm_exists} =    Run Keyword And Return Status
+    ...    File Should Exist  ${DST_DIR}/${vm}.qcow2
+    RETURN    ${vm_exists}
+
+Check VM State
+    [Arguments]     ${v}
+    ${rc}   ${o} =      Run And Return Rc And Output
+    ...     LANG=C virsh domstate ${v}
+    ${out} =    Remove String    ${o}    \n
+    RETURN    ${out}
