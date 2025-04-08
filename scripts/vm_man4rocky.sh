@@ -86,5 +86,4 @@ $VIRTC -v -x -a ${IMGFILE} \
     --upload data/hosts:/etc/hosts \
     $(for i in $(ls /tmp/ifcfg-eth*);do echo --upload $i:/etc/sysconfig/network-scripts;done) \
 	--ssh-inject ${USERID} \
-    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
-    --firstboot-command "cat </dev/null >/etc/machine-id && systemd-machine-id-setup" &> output/virt-customize_${HOSTN}.log 
+    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf"
