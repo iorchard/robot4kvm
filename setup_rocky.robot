@@ -11,6 +11,7 @@ Variables       props.py
 ${VM_MAN}       ${CURDIR}/scripts/vm_man4rocky.sh
 ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 @{LETTERS}      a   b   c   d   e   f   g   h
+${NAMESERVER}	8.8.8.8
 
 *** Tasks ***
 Set Up Lab
@@ -153,7 +154,7 @@ Create Interfaces
         ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nIPV6_DISABLED=yes\nONBOOT=yes
         ...     ELSE IF     'gw' in ${netinfo}
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
-        ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
+        ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nGATEWAY=${netinfo['gw']}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nDNS1=${NAMESERVER}\nIPV6_DISABLED=yes\nONBOOT=yes
         ...     ELSE
         ...         Create File     ${TEMPDIR}/ifcfg-eth${i}
         ...         NAME=eth${i}\nDEVICE=eth${i}\nHWADDR=${mac}\nIPADDR=${netinfo['ip']}\nPREFIX=${netinfo['nm']}\nIPV6_DISABLED=yes\nONBOOT=yes
