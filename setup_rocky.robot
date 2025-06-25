@@ -54,6 +54,11 @@ Set Up Lab
         ...     virt-resize --expand /dev/sda1 ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
         Should Be Equal As Integers     ${rc}   0
 
+        Log        Sysprep the VM.        console=True
+        ${rc} =     Run And Return Rc
+        ...     virt-sysprep -a ${DST_DIR}/${vm}.qcow2
+        Should Be Equal As Integers     ${rc}   0
+
         ${rc}   ${uuid} =   Run And Return Rc And Output
         ...     cat /proc/sys/kernel/random/uuid
 

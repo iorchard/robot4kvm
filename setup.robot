@@ -52,7 +52,7 @@ Set Up Lab
         Log     Create ${DST_DIR}/${vm}.qcow2 based on ${DST_DIR}/base.qcow2
         ...     console=True
 		${rc} =		Run And Return Rc
-		...		qemu-img create -f qcow2 -b ${DST_DIR}/base.qcow2 ${DST_DIR}/${vm}.qcow2
+		...		qemu-img create -f qcow2 -F qcow2 -b ${DST_DIR}/base.qcow2 ${DST_DIR}/${vm}.qcow2
         Should Be Equal As Integers     ${rc}   0
 
         Log        Resize the image to ${DISK}[${vm}]G.    console=True
