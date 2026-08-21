@@ -72,12 +72,14 @@ DNSSERVER="8.8.8.8"
 TIMEZONE="Asia/Seoul"
 # Do not edit below!!!
 
+#    --upload data/hosts:/etc/hosts \
 $VIRTC -a ${IMGFILE} \
     --hostname ${HOSTN} \
-    --upload data/hosts:/etc/hosts \
+    --upload ${HOME}/.gitconfig:/home/${USERID}/.gitconfig \
+    --upload ${HOME}/.gitcreds:/home/${USERID}/.gitcreds \
     $(for i in $(ls /tmp/eth*.nmconnection);do echo --upload $i:/etc/NetworkManager/system-connections/;done) \
     --run-command "chown root:root /etc/NetworkManager/system-connections/*" \
     --run-command "chmod 0600 /etc/NetworkManager/system-connections/*" \
+    --run-command "chown ${USERID}:${USERID} /home/${USERID}/.gitc*" \
     --ssh-inject ${USERID} \
-    --firstboot-command "echo nameserver ${DNSSERVER} > /etc/resolv.conf" \
-    --firstboot-command "cat </dev/null >/etc/machine-id && systemd-machine-id-setup" &> output/virt-customize-${HOSTN}.log
+    &> output/virt-customize-${HOSTN}.log

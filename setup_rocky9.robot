@@ -10,6 +10,7 @@ Variables       props.py
 ${VM_MAN}       ${CURDIR}/scripts/vm_man4rocky9.sh
 ${MACGEN}       ${CURDIR}/scripts/macgen.sh
 @{LETTERS}      a   b   c   d   e   f   g   h
+${NAMESERVERS}	8.8.8.8;8.8.4.4;
 
 *** Tasks ***
 Set Up Lab
@@ -45,7 +46,12 @@ Set Up Lab
 
         Log        Resize root partition to 100%.        console=True
         ${rc} =     Run And Return Rc
-        ...     virt-resize --expand /dev/sda1 ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
+        ...     virt-resize --expand ${IMG_ROOT_PARTITION} ${SRC_DIR}/${IMG} ${DST_DIR}/${vm}.qcow2
+        Should Be Equal As Integers     ${rc}   0
+
+        Log        Sysprep the VM.        console=True
+        ${rc} =     Run And Return Rc
+        ...     virt-sysprep -a ${DST_DIR}/${vm}.qcow2
         Should Be Equal As Integers     ${rc}   0
 
         ${rc}   ${uuid} =   Run And Return Rc And Output
@@ -152,7 +158,7 @@ Create Interfaces
         ...         [connection]\nid=${netinfo['id']}\nuuid=${nmuuid}\ntype=ethernet\ninterface-name=eth${i}\n[ethernet]\n\n[ipv4]\nmethod=disabled\nnever-default=true\n[ipv6]\nmethod=disabled\n
         ...     ELSE IF     'gw' in ${netinfo}
         ...         Create File     ${TEMPDIR}/eth${i}.nmconnection
-        ...         [connection]\nid=${netinfo['id']}\nuuid=${nmuuid}\ntype=ethernet\ninterface-name=eth${i}\n[ethernet]\n\n[ipv4]\naddress1=${netinfo['ip']}/${netinfo['nm']}\ngateway=${netinfo['gw']}\nmethod=manual\n[ipv6]\nmethod=disabled\n
+        ...         [connection]\nid=${netinfo['id']}\nuuid=${nmuuid}\ntype=ethernet\ninterface-name=eth${i}\n[ethernet]\n\n[ipv4]\naddress1=${netinfo['ip']}/${netinfo['nm']}\ngateway=${netinfo['gw']}\ndns=${NAMESERVERS}\nmethod=manual\n[ipv6]\nmethod=disabled\n
         ...     ELSE
         ...         Create File     ${TEMPDIR}/eth${i}.nmconnection
         ...         [connection]\nid=${netinfo['id']}\nuuid=${nmuuid}\ntype=ethernet\ninterface-name=eth${i}\n[ethernet]\n\n[ipv4]\naddress1=${netinfo['ip']}/${netinfo['nm']}\nmethod=manual\nnever-default=true\n[ipv6]\nmethod=disabled\n

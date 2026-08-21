@@ -56,7 +56,7 @@ Set Up Lab
         Create Disk     ${vm}
 
         Log     Attach interfaces to ${vm}        console=True
-        Create Interfaces        ${vm}  ${IPS}[${vm}]
+        Create Interfaces        ${vm}
 
         Log     Run ${VM_MAN}       console=True
         ${rc}   ${out} =     Run And Return Rc And Output
@@ -125,8 +125,7 @@ Create OSD Disks
 
 Create Interfaces
     [Documentation]        Create Interfaces
-    [Arguments]        ${vm}    ${ifaces}
-    Remove File     ${TEMPDIR}/ifcfg*
+    [Arguments]        ${vm}
     FOR     ${i}   IN RANGE		2
         ${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
         Should Be Equal As Integers     ${rc}   0
@@ -139,8 +138,3 @@ Create Interfaces
 
         Run     virsh attach-interface --domain ${vm} --type bridge --source vmbr1 --model virtio --mac ${mac} --persistent
     END
-    # service interface for internet connection.
-    #${rc}   ${mac} =    Run And Return Rc And Output    ${MACGEN}
-    #Should Be Equal As Integers     ${rc}   0
-    #Run     virsh attach-interface --domain ${vm} --type bridge --source service --model virtio --mac ${mac} --persistent
-    
