@@ -97,7 +97,7 @@ $VIRTC -a ${IMGFILE} \
     --run-command "sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config" \
     --run-command "adduser --disabled-password --gecos '' ${USERID}" \
     --run-command "gpasswd -a ${USERID} sudo" \
-    --run-command "echo '${USERID} ALL=(ALL:ALL) ALL' > /etc/sudoers.d/99-${USERID}" \
+    --run-command "echo '${USERID} ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-${USERID}" \
     --run-command "chmod 0440 /etc/sudoers.d/99-${USERID}" \
     --password ${USERID}:password:${USERPW} \
     --ssh-inject ${USERID} \
